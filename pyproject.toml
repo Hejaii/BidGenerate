@@ -1,0 +1,13 @@
+[project]
+name = "build-pdf-pipeline"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "dashscope",
+]
+
+[tool.build_pdf]
+model = "qwen-plus-2025-07-14"
+temperature = 0.2
+topk = 5
+cache_dir = "cache"

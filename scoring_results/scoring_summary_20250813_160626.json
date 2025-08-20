@@ -1,0 +1,389 @@
+[
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人虽在管理体系方面具备一定的制度设计和实施框架，但缺乏招标文件明确要求的ISO系列认证证书，导致该商务要求完全不满足，存在重大资质缺项风险，需立即补正。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人具备一定的企业资质和行业背景，但未能响应‘软件企业证书’这一具体技术评分项，导致该条目不得分。建议在后续投标中严格对照评分细则准备证明材料，确保关键资质不遗漏。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未提供符合要求的省级及以上物联网领域科技或荣誉证书，相关材料缺失或未完成填写，导致无法得分。建议在后续投标中完善证书类材料的整理与提交，确保关键加分项不遗漏。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未能提供满足本项技术要求的相关证据，导致该项不得分。建议在后续投标文件中补充相关系统应用实例以提升技术得分。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该投标文件在项目实施和质量管理方面表现良好，但未能响应技术评分项中关于系统著作权的要求，导致此项不得分。建议在后续投标中加强对评分要点的逐项响应，尤其是知识产权类硬性条件的证明材料提供。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人虽具备高新技术企业资质，但在商务资质证明方面存在严重缺失，关键证书未提供有效复印件且未见盖章，未能满足招标文件的强制性要求，导致该项不得分。建议在后续投标中严格对照检查表准备完整、盖章齐全的证明材料。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该评分项未满足，因缺少项目负责人个人资质证明文件，导致无法得分。建议在人员资质部分单独设立‘项目团队成员资格证书’章节，系统性地提交关键人员的证书材料。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 2,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的文件中展示任何与项目团队人员配备相关的信息，导致该项要求完全无法验证，属于实质性响应缺失，存在重大缺项风险。建议在正式投标前完善人力资源配置说明，确保满足招标基本门槛要求。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该商务要求虽不计分，但投标人仍应进行形式上的响应以展示投标文件的完整性和规范性。当前文件内容缺失，整体响应质量较低。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未提供招标文件中明确要求的社保证明、身份证复印件及相关证书的加盖公章复印件，关键材料缺失严重，不符合商务要求的基本响应标准，导致该项不得分。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未提供满足该技术要求的任何响应内容，导致无法证明其产品厂商具备所需的信息安全服务资质，此项不得分。建议在后续投标中加强对资质类要求的逐项响应和证明材料归档。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未针对此项技术要求提供任何响应内容，导致无法得分。建议今后在投标文件中完整响应每一项评分要求，尤其是涉及制造商资质的加分项，需提供清晰、可验证的证明材料。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未按要求提供加盖公章的有效证书证明材料，关键资质缺失，不符合招标文件的商务要求，导致该项不得分。建议在后续投标中严格对照检查表准备完整、有效的盖章证明材料。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 2,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未能提供有效的类似项目业绩证明材料，所有文件均为未填充的模板，无法满足招标文件对近三年农业类智能化系统项目业绩的评分要求，此项不得分。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应此项商务要求，缺少必要的合同证明材料，导致该项不得分。建议在后续投标中严格对照招标文件的商务条款逐项准备并提交对应证明文件。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该要求虽满分分值为0分，不直接影响技术得分，但属于评审中必须响应的资格性和合规性条款。当前文件材料中完全缺失相关响应内容，存在导致投标被否决的风险，建议立即补充完整证明材料。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该商务要求为资格性条款，虽满分分值为0分，通常为通过性审查项，但投标人未在提交文件中提供任何相关证明，存在资格审查不通过的风险。建议即使分值为0，也应完整响应此类关键资格要求。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于本项为商务基本资格要求，虽满分为0分，但若缺乏依法纳税记录的证明，可能影响投标人的合规性审查结果，建议严格按招标文件要求提供完整证明材料以确保通过形式审查。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何相关文件或信息，该项要求未能得到满足，建议在后续投标中完善商务资质证明材料的提交。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于本项满分为0分，属于形式性要求且投标人未提交相关文件，视为不满足要求内容，但不影响总分。建议在投标文件中补充基本财务信息以提升整体可信度。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于本项要求满分为0分，不计入评分体系，且投标文件中未针对‘设备和专业技术能力’做出实质性响应，故评定为不满足，但不影响总分计算。建议未来在类似要求中补充相关证明材料以增强投标竞争力。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该要求为基本资格条件，虽不计分，但未提供相应证明将导致资格审查不通过。当前响应内容缺失，存在重大风险，需立即补充相关材料以确保投标有效性。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何项目文件内容，无法响应信用查询要求，导致该项不得分。建议今后投标时严格按照商务要求提交完整的信用证明材料，以避免形式审查不通过的风险。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于本项为资格性要求且满分为0分，评分不计入总分，但投标人必须满足该要求方可通过资格审查。当前因无任何文件提交，视为不满足资格要求，可能导致投标被否决。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何项目文件内容，无法证明满足特定资格要求，本次评分为不满足。建议投标人完整提交相关证明文件以确保通过资格审查。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何项目文件内容，无法证明满足投标有效期要求，此项响应缺失，导致无法通过形式审查的风险极高。建议严格按招标文件要求提交完整的商务响应文件。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "该要求为0分项，通常用于判断是否构成有效投标或是否存在异常低价情形。由于投标人未提供任何报价信息，无法确认其投标的有效性，存在被认定为无效投标的风险。建议在正式投标中严格按要求提交完整报价文件。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 27,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的文件中提供对硬件和软件技术参数的实质性响应内容，无法证明其技术方案满足招标要求，技术响应部分视为缺失，导致该项不得分。建议在后续投标中强化技术响应文件的编制，确保覆盖所有招标技术条款。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 2,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的文件中对‘孪生果园’这一技术要求做出实质性响应，缺乏关键技术和实施内容的描述，导致该项不得分。建议在后续投标文件中增加数字孪生系统的技术章节，以完整响应此类智能化展示要求。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 1,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的文件中体现对本项商务要求的任何响应，属于关键内容缺失，严重影响技术评分。建议在后续投标中完善技术方案文档，确保覆盖招标文件中的所有功能需求点。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 2,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的文件中提供满足本项技术要求的任何证据或方案描述，属于完全缺失响应，无法证明具备实现该功能的能力。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未在提交的项目文件中体现对‘果园环境监控’这一技术要求的响应，缺乏必要的技术方案和实现路径描述，整体响应程度为不满足。建议补充详细的监控系统设计方案以提升技术得分。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 5,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未提交满足招标要求的技术方案文件，导致该评分项无法获得任何分数。建议在后续投标中严格按照招标文件要求编制并提交完整的技术响应文件。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何项目文件内容，无法对投标文件的完整性与适用性进行有效判断，整体评估为不满足。建议补充完整响应材料以支持后续评审。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 6,
+    "actual_score": 2,
+    "score_percentage": 33.3,
+    "score_level": "较差",
+    "overall_assessment": "投标人未按要求提供完整的项目实施方案，关键内容缺失严重，仅零星提供部分管理相关内容，整体响应程度较低，方案完整性不足，难以支撑项目有效实施与验收。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何项目文件内容，无法对投标文件的完整性、适用性和准确性进行评估，整体响应情况为不满足。建议补充完整材料后重新评审。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 3,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应本项技术要求中的任何核心内容，缺乏必要的培训与售后服务文件支持，导致该项不得分。建议在后续投标中严格对照招标文件逐项检查，确保所有技术方案要素完整提交。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 0,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "由于未提供任何响应文件，无法证明满足招标要求，整体响应状态为不满足。建议补充完整材料以供评审。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 8,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未提供符合要求的项目理解和重难点分析内容，无法体现对项目关键环节的深入理解与应对能力，响应严重不足，需全面补充相关材料以满足招标要求。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 10,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应本项技术要求的核心内容，缺少必要的方案设计文件，导致无法进行有效评议，属于未提供情形，评分结果为不满足。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 8,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应本项技术要求，缺乏必要的软件测试方法和技术说明，无法体现其质量控制能力，不符合招标文件基本要求，需重点补充相关材料以满足评标标准。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "商务要求",
+    "max_score": 8,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应本项商务要求，未能提供符合招标文件规定的项目质量保障体系，导致该项得分为零，建议在后续投标中加强质量管理体系文件的编制与项目针对性适配。"
+  },
+  {
+    "requirement_summary": "",
+    "category": "技术要求",
+    "max_score": 8,
+    "actual_score": 0,
+    "score_percentage": 0,
+    "score_level": "不满足",
+    "overall_assessment": "投标人未响应本项技术要求，未提供任何相关内容，导致该项得分为0。建议在后续投标中严格对照招标文件逐项响应，确保关键技术内容不遗漏。"
+  }
+]

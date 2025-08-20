@@ -1,0 +1,160 @@
+<mxGraphModel dx="1280" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- 开始 -->
+    <mxCell id="2" value="开始" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="240" width="100" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- 用户录制视频 -->
+    <mxCell id="3" value="用户录制一段视频" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="220" y="240" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="2" target="3">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- OCEANAI 分析 -->
+    <mxCell id="5" value="OCEANAI 分析用户大五人格" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="410" y="240" width="200" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="3" target="5">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 用户选择 -->
+    <mxCell id="7" value="用户选择路径" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="640" y="240" width="120" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="5" target="7">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 直接生成形象分支 -->
+    <mxCell id="9" value="直接生成形象" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="800" y="150" width="140" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="7" target="9">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="830" y="190" as="targetPoint"/>
+      </mxGeometry>
+      <mxCell id="10-label" value="是" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" connectable="0" parent="1">
+        <mxGeometry x="740" y="180" width="40" height="20" as="geometry"/>
+      </mxCell>
+    </mxCell>
+
+    <!-- 选择萌属性分支 -->
+    <mxCell id="11" value="选择萌属性性格特质" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#2196F3;" vertex="1" parent="1">
+      <mxGeometry x="800" y="320" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="7" target="11">
+      <mxGeometry relative="1" as="geometry"/>
+      <mxCell id="12-label" value="否" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" connectable="0" parent="1">
+        <mxGeometry x="740" y="300" width="40" height="20" as="geometry"/>
+      </mxCell>
+    </mxCell>
+
+    <!-- 性格选择流程 -->
+    <mxCell id="13" value="LLM 匹配萌属性池" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#2196F3;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="320" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="11" target="13">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="15" value="推荐5个性格特质供选择" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#2196F3;" vertex="1" parent="1">
+      <mxGeometry x="1240" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="13" target="15">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="17" value="用户选择后推荐下一批（最多5个）" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#2196F3;" vertex="1" parent="1">
+      <mxGeometry x="1490" y="320" width="250" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="15" target="17">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 性格选择循环判断 -->
+    <mxCell id="19" value="还有可选特质？或用户退出？" style="rhombus;whiteSpace=wrap;html=1;strokeColor=#2196F3;" vertex="1" parent="1">
+      <mxGeometry x="1770" y="320" width="160" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="17" target="19">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="21" value="是" style="text;html=1;align=center;" vertex="1" connectable="0" parent="1">
+      <mxGeometry x="1700" y="300" width="40" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="否" style="text;html=1;align=center;" vertex="1" connectable="0" parent="1">
+      <mxGeometry x="1850" y="400" width="40" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- 是：回到推荐步骤 -->
+    <mxCell id="23" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="19" target="15">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1530" y="400" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- 否：进入形象生成流程 -->
+    <mxCell id="24" value="选择身份（LLM 提供）" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="2000" y="240" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="25" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="9" target="24"/>
+    <mxCell id="26" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="19" target="24"/>
+
+    <mxCell id="27" value="匹配服装/道具池" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="2200" y="240" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="28" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="24" target="27"/>
+
+    <mxCell id="29" value="推荐5个服装/道具供选择" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="2400" y="240" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="30" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="27" target="29"/>
+
+    <mxCell id="31" value="用户选择后推荐下一批（最多5个）" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="2650" y="240" width="250" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="29" target="31"/>
+
+    <mxCell id="33" value="还有可选服装？或用户退出？" style="rhombus;whiteSpace=wrap;html=1;strokeColor=#4CAF50;" vertex="1" parent="1">
+      <mxGeometry x="2950" y="240" width="180" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="34" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="31" target="33"/>
+
+    <mxCell id="35" value="是" style="text;html=1;align=center;" vertex="1" connectable="0" parent="1">
+      <mxGeometry x="2900" y="220" width="40" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="36" value="否" style="text;html=1;align=center;" vertex="1" connectable="0" parent="1">
+      <mxGeometry x="3080" y="320" width="40" height="20" as="geometry"/>
+    </mxCell>
+
+    <!-- 是：回到推荐服装 -->
+    <mxCell id="37" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="33" target="29">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 否：AI绘画 -->
+    <mxCell id="38" value="AI绘画生成提示词，用户可修改" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9C27B0;" vertex="1" parent="1">
+      <mxGeometry x="3200" y="240" width="240" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="39" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="33" target="38"/>
+
+    <!-- Textoon生成Live2D -->
+    <mxCell id="40" value="使用 Textoon 生成 Live2D 形象" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9C27B0;" vertex="1" parent="1">
+      <mxGeometry x="3460" y="240" width="240" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="38" target="40"/>
+
+    <!-- 结束 -->
+    <mxCell id="42" value="结束" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+      <mxGeometry x="3720" y="240" width="100" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="43" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;" edge="1" parent="1" source="40" target="42"/>
+  </root>
+</mxGraphModel>
