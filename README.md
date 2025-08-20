@@ -6,11 +6,11 @@
 系统以大语言模型（LLM）为核心，结合知识库检索与 LaTeX 排版，实现从需求提取到 PDF 输出的完整流程。
 ## 项目特色
 
-- **智能驱动**：基于LLM（大语言模型）的智能内容生成
-- **数据驱动**：大数据分析和机器学习算法支持
-- **技术先进**：采用最新的物联网和AI技术栈
-- **文档完整**：自动生成符合招标要求的投标文件
-- **精准定位**：面向投标文档的专业解决方案
+-  **智能驱动**：基于LLM（大语言模型）的智能内容生成
+-  **数据驱动**：大数据分析和机器学习算法支持
+-  **技术先进**：采用最新的物联网和AI技术栈
+-  **文档完整**：自动生成符合招标要求的投标文件
+-  **精准定位**：面向投标文档的专业解决方案
 
 ## 项目结构
 
@@ -96,7 +96,7 @@
 ### 1. 智能投标文件生成
 - **需求解析**：自动解析招标文件要求
 - **内容检索**：从知识库中智能检索相关内容
-- **内容合并**：使用LLM智能合并和优化内容
+- **内容合并**：在生成阶段通过提示词产出可直接拼接的片段，最终合并时无需再次调用LLM
 - **PDF生成**：自动生成符合要求的投标文件
 - **分页布局**：每条需求自动分页呈现，避免内容过于紧凑
 - **需求分类**：LLM区分需生成文字与需原文复制的条目
@@ -194,7 +194,12 @@ python scripts/simple_pdf_generator.py
 python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchard-bid --out test_bid.pdf --topk 3
 ```
 
-### 示例2：自定义需求文件
+### 示例2：端到端运行（先提取需求再生成PDF）
+```bash
+python full_pipeline.py --tender path/to/tender.pdf --kb litchi-smart-orchard-bid --out my_bid.pdf
+```
+
+### 示例3：自定义需求文件
 ```markdown
 # 自定义需求文件
 **1. 技术方案要求**
@@ -206,7 +211,7 @@ python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchar
 - 内容：项目计划安排
 ```
 
-### 示例3：批量处理
+### 示例4：批量处理
 ```bash
 # 批量生成多个文档
 for req in docs/*.md; do
