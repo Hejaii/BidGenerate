@@ -13,6 +13,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover
     from contextlib import contextmanager
 
+
     @contextmanager
     def tqdm(*args, **kwargs):
         class Dummy:
@@ -59,6 +60,7 @@ def merge_contents(
                     system = (
                         "Rewrite the source text so it directly addresses the given requirement. "
                         "Return plain paragraphs without Markdown formatting."
+
                     )
                     user = f"Requirement: {req.title}\nSource:\n{snippet}"
                     rewritten = llm_rewrite(client, system, user, cache)
@@ -74,6 +76,7 @@ def merge_contents(
                 merged = "\n\n".join(parts)
                 if not merged.strip().endswith("\\newpage"):
                     merged = merged.rstrip() + "\n\\newpage"
+
                 sections.append(f"# {req.title}\n\n{merged}\n")
                 meta_item["selected"] = [str(p) for p, _ in files]
 
