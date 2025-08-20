@@ -9,7 +9,18 @@ from typing import Dict, List, Tuple
 from llm_client import LLMClient as Client
 from .caching import LLMCache, llm_rewrite
 from .requirements_parser import RequirementItem
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ModuleNotFoundError:  # pragma: no cover
+    from contextlib import contextmanager
+
+    @contextmanager
+    def tqdm(*args, **kwargs):
+        class Dummy:
+            def update(self, *a, **k):
+                pass
+
+        yield Dummy()
 
 
 def merge_contents(requirements: List[RequirementItem], ranked: Dict[str, List[Tuple[Path, float]]], *, client: Client, cache: LLMCache, use_llm: bool = True) -> tuple[str, Dict]:
@@ -40,7 +51,8 @@ def merge_contents(requirements: List[RequirementItem], ranked: Dict[str, List[T
                         "Combine the following content pieces into a coherent text section. "
                         "Remove duplicates but keep references to original file paths. "
                         "DO NOT use any Markdown formatting like **, *, -, tables, or code fences. "
-                        "Return plain paragraphs with simple line breaks only."
+                        "Return plain paragraphs with simple line breaks only. "
+                        "Append a line with \\newpage at the end so that each requirement starts on a new page."
                     )
                     user_parts = []
                     for (path, _), snippet in zip(files, snippets):
@@ -49,6 +61,8 @@ def merge_contents(requirements: List[RequirementItem], ranked: Dict[str, List[T
                     merged = llm_rewrite(client, system, user, cache)
                 else:
                     merged = "\n\n".join(snippets)
+                if not merged.strip().endswith("\\newpage"):
+                    merged = merged.rstrip() + "\n\\newpage"
                 # 将每个需求标题作为 Markdown 一级标题，以便 LaTeX 生成目录与章节
                 sections.append(f"# {req.title}\n\n{merged}\n")
                 meta_item["selected"] = [str(p) for p, _ in files]
