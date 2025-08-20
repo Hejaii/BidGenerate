@@ -9,9 +9,19 @@ from pathlib import Path
 from typing import List, Dict
 
 from llm_client import LLMClient as Client
-from doc_loader import load_document
 from .caching import LLMCache, llm_json
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ModuleNotFoundError:  # pragma: no cover
+    from contextlib import contextmanager
+
+    @contextmanager
+    def tqdm(*args, **kwargs):
+        class Dummy:
+            def update(self, *a, **k):
+                pass
+
+        yield Dummy()
 
 
 @dataclass
@@ -24,6 +34,7 @@ class RequirementItem:
     source: str
     notes: str
     weight: float
+    response_type: str = "generate"
 
 
 def _from_dict(data: dict, index: int) -> RequirementItem:
@@ -37,6 +48,7 @@ def _from_dict(data: dict, index: int) -> RequirementItem:
         source=str(data.get("source", "")),
         notes=str(data.get("notes", "")),
         weight=float(data.get("weight", 1.0)),
+        response_type=str(data.get("response_type", "generate")),
     )
 
 
@@ -51,6 +63,16 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
     if suffix == ".pdf":
         if not use_llm:
             raise ValueError("PDF requirements need LLM parsing")
+        try:
+            from doc_loader import load_document  # type: ignore
+        except ModuleNotFoundError:
+            import importlib.util
+            doc_path = Path(__file__).resolve().parent.parent / "scripts" / "doc_loader.py"
+            spec = importlib.util.spec_from_file_location("doc_loader", doc_path)
+            module = importlib.util.module_from_spec(spec)
+            assert spec.loader is not None
+            spec.loader.exec_module(module)
+            load_document = getattr(module, "load_document")
         text = load_document(path)
     else:
         text = path.read_text(encoding="utf-8")
@@ -59,7 +81,8 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
         try:
             system = (
                 "You convert requirement lists provided in JSON/CSV/Markdown/PDF into a JSON array "
-                "of objects with fields id,title,keywords,source,notes,weight. keywords is a list of strings. "
+                "of objects with fields id,title,keywords,source,notes,weight,response_type. keywords is a list of strings. "
+                "response_type is either 'generate' for content to be written by the system or 'copy' for text that should be copied directly from the source. "
                 "CRITICAL: Return ONLY valid JSON array, no explanations, no reasoning, no other text. "
                 "Start with [ and end with ]. No text before or after the JSON."
             )
@@ -93,7 +116,8 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
                     keywords=[],
                     source="",
                     notes="",
-                    weight=1.0
+                    weight=1.0,
+                    response_type="generate",
                 ))
             pbar.update(1)
     
@@ -121,7 +145,8 @@ def _fallback_parse(text: str) -> List[Dict]:
                 "keywords": [],
                 "source": "",
                 "notes": "",
-                "weight": 1.0
+                "weight": 1.0,
+                "response_type": "generate",
             }
         elif line.startswith('- ') and current_item:
             # 添加详细信息到notes
@@ -141,7 +166,8 @@ def _fallback_parse(text: str) -> List[Dict]:
             "keywords": ["招标", "文档", "清单"],
             "source": "招标文件",
             "notes": "包含招标文件中要求提交的所有文档和材料",
-            "weight": 1.0
+            "weight": 1.0,
+            "response_type": "generate",
         }]
     
     return items
