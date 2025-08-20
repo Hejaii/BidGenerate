@@ -8,7 +8,18 @@ from typing import Dict, List, Tuple
 from llm_client import LLMClient as Client
 from .caching import LLMCache, llm_json
 from .requirements_parser import RequirementItem
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ModuleNotFoundError:  # pragma: no cover
+    from contextlib import contextmanager
+
+    @contextmanager
+    def tqdm(*args, **kwargs):
+        class Dummy:
+            def update(self, *a, **k):
+                pass
+
+        yield Dummy()
 
 
 def scan_kb(kb_dir: Path) -> List[Path]:
