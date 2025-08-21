@@ -42,7 +42,7 @@ class LLMClient:
     max_retries: int = 3
     temperature: float = 0.2
     max_tokens: int = 4000
-    _model_index: int = field(init=False, default=0)
+    _model_index: int = field(init=False, default=2)  # 从第三个模型开始，跳过前两个已用完免费额度的模型
     _request_counter: int = field(init=False, default=0)
 
     def __post_init__(self) -> None:

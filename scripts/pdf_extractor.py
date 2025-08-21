@@ -53,11 +53,13 @@ class QianwenAPI:
         
     def extract_all_requirements(self, page_content: str, page_number: int) -> List[Dict]:
         """使用通义千问API提取页面中的所有要求"""
-        # 限制内容长度，避免超出API限制
-        if len(page_content) > 3000:
-            page_content = page_content[:3000] + "..."
+        # 限制内容长度，避免超出API限制，减少处理时间
+        if len(page_content) > 1500:  # 从3000减少到1500
+            page_content = page_content[:1500] + "..."
             
         prompt = f"""你是"要求抽取器"。仅基于输入文本进行抽取，不得臆测或引入外部知识。目标是：穷尽性抽取【商务要求】与【技术要求】（以及无法归类但像要求的"其他要求"），并给出可追溯的证据与定位提示。
+
+请严格按照以下JSON格式输出，不要包含任何其他文字：
 
 # 输入
 - DOC: 原始文本（可包含或不包含页码/分段/表格/附件）。
@@ -131,7 +133,9 @@ class QianwenAPI:
   ]
 }}
 
-如果页面中没有商务或技术要求，请返回空数组。"""
+如果页面中没有商务或技术要求，请返回空数组。
+
+重要：请严格按照JSON格式输出，不要包含任何其他文字、说明或解释。"""
 
         headers = {
             'Authorization': f'Bearer {self.api_key}',
@@ -139,78 +143,70 @@ class QianwenAPI:
             'X-DashScope-SSE': 'disable'
         }
         
-        data = {
-            "model": "qwen-plus-2025-01-25",
-            "input": {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            },
-            "parameters": {
-                "temperature": 0.1,
-                "max_tokens": 1000,
-                "top_p": 0.8
-            }
-        }
+        # 使用LLMClient替代直接API调用
+        from llm_client import LLMClient
         
-        print(f"发送API请求分析第{page_number}页内容...")
+        # 创建LLMClient实例，它会自动使用可用的模型
+        llm_client = LLMClient()
+        
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
         
         try:
-            response = requests.post(self.base_url, headers=headers, json=data, timeout=200)
+            # 使用LLMClient的chat方法
+            content = llm_client.chat(messages, temperature=0.1, max_tokens=2000)  # 减少token数量，加快响应
             
-            if response.status_code == 200:
-                result = response.json()
-                content = None
+            # 尝试解析JSON响应，处理可能的markdown代码块
+            try:
+                # 如果内容包含markdown代码块，提取其中的JSON
+                if '```json' in content:
+                    json_start = content.find('```json') + 7
+                    json_end = content.find('```', json_start)
+                    if json_end != -1:
+                        json_str = content[json_start:json_end].strip()
+                        content = json_str
+                elif '```' in content:
+                    # 处理没有语言标识的代码块
+                    json_start = content.find('```') + 3
+                    json_end = content.find('```', json_start)
+                    if json_end != -1:
+                        json_str = content[json_start:json_end].strip()
+                        content = json_str
                 
-                # 检查不同的响应格式
-                if 'output' in result:
-                    if 'choices' in result['output'] and len(result['output']['choices']) > 0:
-                        # 新格式：choices数组
-                        content = result['output']['choices'][0]['message']['content']
-                    elif 'text' in result['output']:
-                        # 新格式：直接text字段
-                        content = result['output']['text']
-                    else:
-                        print(f"API响应格式异常: {result}")
-                        return []
-                else:
-                    print(f"API响应格式异常: {result}")
-                    print("API调用失败，程序退出")
-                    sys.exit(1)
+                parsed = json.loads(content)
                 
-                # 尝试解析JSON响应
-                try:
-                    parsed = json.loads(content)
+                # 处理不同的返回格式
+                if isinstance(parsed, list):
+                    # 如果直接返回列表
+                    requirements = parsed
+                elif isinstance(parsed, dict):
+                    # 如果返回字典，提取requirements字段
                     requirements = parsed.get("requirements", [])
-                    
-                    # 为每个要求添加页码信息
-                    for req in requirements:
-                        req["page_number"] = page_number
-                    
-                    return requirements
-                except json.JSONDecodeError:
-                    print("API返回内容无法解析为JSON，程序退出")
-                    sys.exit(1)
-            else:
-                error_msg = f"API请求失败: {response.status_code}"
-                try:
-                    error_detail = response.json()
-                    error_msg += f", {error_detail.get('message', '')}"
-                except:
-                    error_msg += f", {response.text}"
-                print(error_msg)
+                else:
+                    print(f"意外的返回格式: {type(parsed)}")
+                    return []
                 
-                # API失败时直接退出
-                print("API调用失败，程序退出")
+                # 为每个要求添加页码信息
+                for req in requirements:
+                    req["page_number"] = page_number
+                
+                return requirements
+            except json.JSONDecodeError as e:
+                print(f"JSON解析失败: {e}")
+                print(f"原始内容: {content}")
+                print("程序退出")
                 sys.exit(1)
                 
         except Exception as e:
-            print(f"API调用出错: {e}")
+            print(f"LLMClient调用失败: {e}")
             print("程序退出")
             sys.exit(1)
+        
+        print(f"使用LLMClient分析第{page_number}页内容...（请耐心等待，AI正在分析中）")
 
 
 class PDFExtractor:
