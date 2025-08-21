@@ -10,7 +10,8 @@ from utils import ensure_dir, markdown_to_pdf, write_text
 
 ATTACHMENT_PROMPT = (
     "你是一名投标附件生成器。根据给定的附件规范、分析表摘要和参考资料，"
-    "生成符合要求的 Markdown 内容。保持字段顺序，并在需要签章/签字的地方标注。"
+    "生成符合要求的投标文件具体内容。保持字段顺序，并在需要签章/签字的地方标注。"
+    "注意：生成的是投标文件的实际内容，不是说明或解释文本。"
     '输出 JSON {"content": str, "source_refs": [], "placeholders": []}.'
 )
 

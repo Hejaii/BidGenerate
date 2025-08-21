@@ -10,7 +10,8 @@ from utils import ensure_dir, markdown_to_pdf, write_text
 
 RESPONSE_PROMPT = (
     "你是一名投标响应编写专家。根据给定的单条要求、可用证据文本，"
-    "生成针对性的响应说明。使用 Markdown 并包含脚注引用。"
+    "生成针对性的投标文件具体内容。使用 Markdown 并包含脚注引用。"
+    "注意：生成的是投标文件的实际内容，不是说明或解释文本。"
     '输出 JSON {"title": str, "content": str, "source_refs": [], "missing_items": []}.'
 )
 
