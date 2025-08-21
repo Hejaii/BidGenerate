@@ -127,18 +127,27 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True, help="输出PDF路径")
     parser.add_argument("--workdir", type=Path, default=Path("build"), help="工作目录")
     parser.add_argument("--topk", type=int, default=3, help="每条需求选取的参考数量")
+    parser.add_argument("--skip-extract", action="store_true", help="跳过需求提取步骤，直接使用已提取的需求文件")
+    parser.add_argument("--requirements-file", type=Path, help="指定需求文件路径（当跳过提取时使用）")
     args = parser.parse_args()
 
     # 初始化进度跟踪器
-    total_steps = 7  # 总步骤数
+    if args.skip_extract:
+        total_steps = 6  # 跳过提取步骤，只有6步
+        print("🚀 荔枝智慧果园投标文件生成器启动（跳过需求提取模式）")
+    else:
+        total_steps = 7  # 总步骤数
+        print("🚀 荔枝智慧果园投标文件生成器启动")
+    
     progress = ProgressTracker(total_steps)
     
-    print("🚀 荔枝智慧果园投标文件生成器启动")
     print(f"📁 招标文件: {args.tender}")
     print(f"📚 知识库: {args.kb}")
     print(f"📄 输出文件: {args.out}")
     print(f"⚙️  工作目录: {args.workdir}")
     print(f"🎯 每条需求参考数量: {args.topk}")
+    if args.skip_extract:
+        print(f"⏭️  跳过需求提取，使用需求文件: {args.requirements_file or 'build_test_progress/extracted_requirements.md'}")
 
     workdir = args.workdir
     workdir.mkdir(parents=True, exist_ok=True)
@@ -148,8 +157,25 @@ def main() -> None:
     client = Client(models=None, temperature=temperature if temperature is not None else 0.2)
     api = QianwenAPI(os.getenv("DASHSCOPE_API_KEY", ""))
 
-    # 步骤1: 提取需求
-    req_md = extract_requirements(args.tender, api, workdir / "extracted_requirements.md", progress)
+    # 步骤1: 提取需求（可选）
+    if args.skip_extract:
+        # 跳过提取步骤，直接使用已提取的需求文件
+        if args.requirements_file:
+            req_md = args.requirements_file
+        else:
+            req_md = Path("build_test_progress/extracted_requirements.md")
+        
+        if not req_md.exists():
+            print(f"❌ 需求文件不存在: {req_md}")
+            print("请使用 --requirements-file 指定正确的需求文件路径")
+            return
+        
+        print(f"📋 使用已提取的需求文件: {req_md}")
+        progress.start_step("跳过需求提取", f"直接使用已提取的需求文件: {req_md}")
+        progress.end_step("跳过需求提取", f"使用需求文件: {req_md}")
+    else:
+        # 正常执行需求提取
+        req_md = extract_requirements(args.tender, api, workdir / "extracted_requirements.md", progress)
 
     # 步骤2: 解析需求
     progress.start_step("解析需求", "将提取的文本转换为结构化需求对象")
