@@ -35,6 +35,7 @@ class RequirementItem:
     notes: str
     weight: float
     response_type: str = "generate"
+    section: str = ""
 
 
 def _from_dict(data: dict, index: int) -> RequirementItem:
@@ -49,6 +50,24 @@ def _from_dict(data: dict, index: int) -> RequirementItem:
         notes=str(data.get("notes", "")),
         weight=float(data.get("weight", 1.0)),
         response_type=str(data.get("response_type", "generate")),
+        section=str(data.get("section", "")),
+    )
+
+
+@dataclass
+class FormatRequirement:
+    """Requirements describing the desired document format/structure."""
+
+    id: str
+    section: str
+    details: str
+
+
+def _format_from_dict(data: dict, index: int) -> FormatRequirement:
+    return FormatRequirement(
+        id=str(data.get("id", index + 1)),
+        section=str(data.get("section", "")),
+        details=str(data.get("details", "")),
     )
 
 
@@ -81,8 +100,9 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
         try:
             system = (
                 "You convert requirement lists provided in JSON/CSV/Markdown/PDF into a JSON array "
-                "of objects with fields id,title,keywords,source,notes,weight,response_type. keywords is a list of strings. "
+                "of objects with fields id,title,keywords,source,notes,weight,response_type,section. keywords is a list of strings. "
                 "response_type is either 'generate' for content to be written by the system or 'copy' for text that should be copied directly from the source. "
+                "section is the related document section if specified. "
                 "CRITICAL: Return ONLY valid JSON array, no explanations, no reasoning, no other text. "
                 "Start with [ and end with ]. No text before or after the JSON."
             )
@@ -120,8 +140,25 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
                     response_type="generate",
                 ))
             pbar.update(1)
-    
+
     return items
+
+
+def parse_format_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: bool = True) -> List[FormatRequirement]:
+    """Parse bid format requirements from a document."""
+
+    text = path.read_text(encoding="utf-8")
+    if not use_llm:
+        raise ValueError("Parsing format requirements requires use_llm=True")
+
+    system = (
+        "You extract bid document format requirements into a JSON array of objects "
+        "with fields id,section,details. Return ONLY the JSON array."
+    )
+    user = f"Input content:\n{text}\nReturn JSON array only."
+    data = llm_json(client, system, user, cache)
+    items_raw = data if isinstance(data, list) else data.get("items", [])
+    return [_format_from_dict(item, i) for i, item in enumerate(items_raw)]
 
 
 def _fallback_parse(text: str) -> List[Dict]:
