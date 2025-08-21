@@ -1,0 +1,66 @@
+{
+  "business": [
+    {
+      "category": "商务要求",
+      "requirement_text": "供应商认为需要提供的其他资格文件和商务资料",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "提供其他资格文件和商务资料",
+      "response_type": "copy",
+      "reason": "属于资格文件和商务资料，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "中小企业声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "根据情况提供中小企业声明函",
+      "response_type": "copy",
+      "reason": "属于特定格式的商务文件，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "残疾人福利性单位声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "根据情况提供残疾人福利性单位声明函",
+      "response_type": "copy",
+      "reason": "属于特定格式的商务文件，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "监狱企业声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "根据情况提供监狱企业声明函",
+      "response_type": "copy",
+      "reason": "属于特定格式的商务文件，需直接复制",
+      "page_number": 3
+    }
+  ],
+  "technical": [
+    {
+      "category": "技术要求",
+      "requirement_text": "技术偏离表",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "填写技术偏离表",
+      "response_type": "generate",
+      "reason": "涉及技术内容的对比，需生成具体内容",
+      "page_number": 3
+    },
+    {
+      "category": "技术要求",
+      "requirement_text": "技术实施方案",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "制定技术实施方案",
+      "response_type": "generate",
+      "reason": "涉及具体技术实现方案，需生成相关内容",
+      "page_number": 3
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "1": {
+    "title": "默认需求",
+    "candidates": [
+      {
+        "path": "litchi-smart-orchard-bid/质量保证计划.md",
+        "score": 0.85
+      },
+      {
+        "path": "litchi-smart-orchard-bid/安全文明施工方案.md",
+        "score": 0.8
+      },
+      {
+        "path": "litchi-smart-orchard-bid/项目风险评估报告.md",
+        "score": 0.5
+      }
+    ],
+    "selected": [
+      "litchi-smart-orchard-bid/质量保证计划.md",
+      "litchi-smart-orchard-bid/安全文明施工方案.md",
+      "litchi-smart-orchard-bid/项目风险评估报告.md"
+    ]
+  }
+}

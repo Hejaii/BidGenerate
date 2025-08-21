@@ -1,0 +1,206 @@
+{
+  "business": [
+    {
+      "category": "商务要求",
+      "requirement_text": "供应商认为需要提供的其他资格文件和商务资料",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "提供其他资格文件和商务资料",
+      "response_type": "copy",
+      "reason": "属于资质文件及商务资料，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "中小企业声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "提交中小企业声明函（可选）",
+      "response_type": "copy",
+      "reason": "属于商务资质文件，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "残疾人福利性单位声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "提交残疾人福利性单位声明函（可选）",
+      "response_type": "copy",
+      "reason": "属于商务资质文件，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "监狱企业声明函（如有）",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "提交监狱企业声明函（可选）",
+      "response_type": "copy",
+      "reason": "属于商务资质文件，需直接复制",
+      "page_number": 3
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "潜在投标人应登录海口市公共资源交易中心网站，选择“交易公告-政府采购”专栏查看采购公告及文件，并在获取采购文件期限内在系统关注项目并下载采购文件。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "投标人需登录网站下载采购文件",
+      "response_type": "copy",
+      "reason": "此为明确的流程和资质要求，直接复制即可",
+      "page_number": 4
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "投标文件需于2023年12月7日10时00分（北京时间）前递交。",
+      "score": 0,
+      "is_important": true,
+      "requirement_summary": "明确投标文件递交时间",
+      "response_type": "copy",
+      "reason": "时间节点要求，必须准确复制",
+      "page_number": 4
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "预算金额：¥8000000.00，其中 A 包：智能化荔枝果园管理系统构建项目 ¥7867000.00，B 包：第三方软件测试 ¥83000.00，C 包：信息安全等级保护测评服务 ¥50000.00。最高限价同预算金额。",
+      "score": 0,
+      "is_important": true,
+      "requirement_summary": "项目预算与最高限价明细",
+      "response_type": "copy",
+      "reason": "金额要求明确且重要，需直接复制",
+      "page_number": 4
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "合同履行期限：A包自签订合同之日起30个日历天内完成，B包自具备测试条件且招标人下发测试通知之日起的60日内完成，C包自系统备案完成之日起3个月内完成（具体以合同约定为准）。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "各包合同履行期限要求",
+      "response_type": "copy",
+      "reason": "时间节点明确，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "本项目不接受联合体投标。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "不接受联合体投标",
+      "response_type": "copy",
+      "reason": "资质或规则要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "投标人须满足《中华人民共和国政府采购法》第二十二条规定。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "符合政府采购法规定",
+      "response_type": "copy",
+      "reason": "资质要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "落实政府采购政策需满足的资格要求：无。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "无特殊政府采购政策要求",
+      "response_type": "copy",
+      "reason": "明确说明无要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "A包特定资格要求：无。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "A包无特定资格要求",
+      "response_type": "copy",
+      "reason": "资质要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "B包特定资格要求：投标人须具有省级以上（含省、自治区、直辖市）质量或市场监督部门颁发的检验检测机构资质认定证书（CMA，检测能力范围包含：计算机信息系统或通用应用软件），或中国合格评定国家认可委员会颁发的实验室认可证书(CNAS，证书认可范围包含:通用应用软件或软件产品）（提供证明材料复印件并加盖投标人公章)。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "B包资质要求",
+      "response_type": "copy",
+      "reason": "资质证书要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "C包特定资格要求：投标人须具有公安部第三研究所颁发的网络安全等级测评与检测评估机构服务认证证书（提供证明材料复印件并加盖投标人公章)。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "C包资质要求",
+      "response_type": "copy",
+      "reason": "资质证书要求，需直接复制",
+      "page_number": 5
+    },
+    {
+      "category": "商务要求",
+      "requirement_text": "获取采购文件时间：2023年11月13日00点00分至2023年11月17日23点59分；地点：海口市公共资源交易网http://ggzy.haikou.gov.cn；方式：网上下载；售价：0元。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "采购文件获取方式及时间",
+      "response_type": "copy",
+      "reason": "时间节点和规则要求，需直接复制",
+      "page_number": 5
+    }
+  ],
+  "technical": [
+    {
+      "category": "技术要求",
+      "requirement_text": "技术偏离表",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "填写技术偏离表",
+      "response_type": "generate",
+      "reason": "涉及技术方案对比，需生成具体内容",
+      "page_number": 3
+    },
+    {
+      "category": "技术要求",
+      "requirement_text": "技术实施方案",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "制定技术实施方案",
+      "response_type": "generate",
+      "reason": "涉及具体技术实现方案，需生成内容",
+      "page_number": 3
+    },
+    {
+      "category": "技术要求",
+      "requirement_text": "建设745亩智能化荔枝果园，主要布设物联网测控系统、田间综合监测站点等设施设备，对荔枝生长环境和本体进行实时监测，涵盖墒情、苗情、虫情、灾情等“四情”和气象环境监测预警预测功能。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "建设智能化荔枝果园监测系统",
+      "response_type": "generate",
+      "reason": "需要提供具体的技术方案实现监测功能",
+      "page_number": 4
+    },
+    {
+      "category": "技术要求",
+      "requirement_text": "开发荔枝果园管理系统中的物联网采集、数据中台、产业‘一张图’模块，购置无人机、智能催芽育秧等智能装备，实现施肥、施药、收获等过程精准作业。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "开发果园管理系统及购置智能装备",
+      "response_type": "generate",
+      "reason": "需要生成详细的技术实施方案",
+      "page_number": 4
+    },
+    {
+      "category": "技术要求",
+      "requirement_text": "打造荔枝园区智慧管理系统，融合数字化设备联网管理，实现农资、人员、成本、设备、农事、收成等生产物料的精准管理，并通过集成、可视化方式实现作物生长及生产过程的集成管理。",
+      "score": 0,
+      "is_important": false,
+      "requirement_summary": "开发智慧管理系统实现集成管理",
+      "response_type": "generate",
+      "reason": "需要生成具体的管理方案和技术实现路径",
+      "page_number": 4
+    }
+  ]
+}
