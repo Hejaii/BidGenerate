@@ -65,8 +65,17 @@ class BidGenerator:
         evidence_map = {}
         risk_flags = []
         
-        for i, requirement in enumerate(self.requirements):
-            logger.info(f"处理条款 {i+1}/{len(self.requirements)}: {requirement.get('clause_id', f'clause_{i}')}")
+        total_requirements = len(self.requirements)
+        print(f"\n🚀 开始生成标书响应，共 {total_requirements} 个条款需要处理")
+        
+        for i, requirement in enumerate(self.requirements, 1):
+            clause_id = requirement.get('clause_id', f'clause_{i}')
+            print(f"\n📝 正在处理条款 {i}/{total_requirements}: {clause_id}")
+            
+            # 显示进度条
+            progress_bar = "█" * int(i / total_requirements * 20) + "░" * (20 - int(i / total_requirements * 20))
+            progress_percent = i / total_requirements * 100
+            print(f"  📊 进度: [{progress_bar}] {progress_percent:.1f}%")
             
             try:
                 response = self._generate_single_clause_response(requirement, placeholders)
@@ -80,11 +89,14 @@ class BidGenerator:
                 if 'risk_flags' in response:
                     risk_flags.extend(response['risk_flags'])
                 
+                print(f"  ✅ 条款 {clause_id} 处理完成")
+                
                 # 避免API调用过于频繁
                 time.sleep(1)
                 
             except Exception as e:
                 logger.error(f"生成条款响应失败: {e}")
+                print(f"  ❌ 条款 {clause_id} 处理失败: {e}")
                 # 生成错误响应
                 error_response = self._generate_error_response(requirement, str(e))
                 all_responses.append(error_response)
