@@ -27,6 +27,7 @@ def markdown_to_latex(markdown: str, *, client: Client, cache: LLMCache, use_llm
         - Use \\textgreater{} for > and \\textless{} for <
         - Do NOT synthesize styles; keep plain Chinese text and paragraphs. Avoid colored links.
         - Ensure all special characters are properly escaped
+        - IMPORTANT: Every \\begin{itemize} must have a corresponding \\end{itemize}
         - Return ONLY the LaTeX content, no other text"""
         user = f"Convert this Markdown to LaTeX:\n\n{markdown}"
         latex = llm_rewrite(client, system, user, cache)
@@ -50,16 +51,63 @@ def markdown_to_latex(markdown: str, *, client: Client, cache: LLMCache, use_llm
                     continue
                 parts.append(line)
             latex = "\n".join(parts)
+        
+        # 修复itemize环境问题
+        latex = _fix_itemize_environments(latex)
     else:
         latex = _simple_markdown_to_latex(markdown)
     
     return latex
 
 
+def _fix_itemize_environments(latex: str) -> str:
+    """修复LaTeX代码中itemize环境不完整的问题"""
+    lines = latex.split('\n')
+    fixed_lines = []
+    itemize_stack = []
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            fixed_lines.append('')
+            continue
+            
+        # 检查itemize环境
+        if '\\begin{itemize}' in line:
+            itemize_stack.append(True)
+            fixed_lines.append(line)
+        elif '\\end{itemize}' in line:
+            if itemize_stack:
+                itemize_stack.pop()
+            fixed_lines.append(line)
+        elif line.startswith('\\item'):
+            if not itemize_stack:
+                # 如果遇到item但没有itemize环境，先创建环境
+                fixed_lines.append('\\begin{itemize}')
+                itemize_stack.append(True)
+            fixed_lines.append(line)
+        elif line.startswith('\\section{') or line.startswith('\\subsection{') or line.startswith('\\subsubsection{'):
+            # 在标题前关闭所有未关闭的itemize环境
+            while itemize_stack:
+                fixed_lines.append('\\end{itemize}')
+                itemize_stack.pop()
+            fixed_lines.append(line)
+        else:
+            fixed_lines.append(line)
+    
+    # 确保所有itemize环境都正确关闭
+    while itemize_stack:
+        fixed_lines.append('\\end{itemize}')
+        itemize_stack.pop()
+    
+    return '\n'.join(fixed_lines)
+
+
 def _simple_markdown_to_latex(markdown: str) -> str:
     """Simple Markdown to LaTeX conversion without LLM."""
     lines = markdown.split('\n')
     latex_lines = []
+    itemize_stack = []  # 跟踪itemize环境的嵌套
     
     for line in lines:
         line = line.strip()
@@ -69,14 +117,27 @@ def _simple_markdown_to_latex(markdown: str) -> str:
             
         # 检查是否是标题行
         if line.startswith('# '):
+            # 关闭所有未关闭的itemize环境
+            while itemize_stack:
+                latex_lines.append('\\end{itemize}')
+                itemize_stack.pop()
             latex_lines.append(f"\\section{{{line[2:]}}}")
         elif line.startswith('## '):
+            # 关闭所有未关闭的itemize环境
+            while itemize_stack:
+                latex_lines.append('\\end{itemize}')
+                itemize_stack.pop()
             latex_lines.append(f"\\subsection{{{line[3:]}}}")
         elif line.startswith('### '):
+            # 关闭所有未关闭的itemize环境
+            while itemize_stack:
+                latex_lines.append('\\end{itemize}')
+                itemize_stack.pop()
             latex_lines.append(f"\\subsubsection{{{line[4:]}}}")
         elif line.startswith('- '):
-            if not latex_lines or latex_lines[-1] != '\\begin{itemize}':
+            if not itemize_stack:
                 latex_lines.append('\\begin{itemize}')
+                itemize_stack.append(True)
             latex_lines.append(f"\\item {line[2:]}")
         elif line.startswith('**') and line.endswith('**'):
             content = line[2:-2]
@@ -94,11 +155,15 @@ def _simple_markdown_to_latex(markdown: str) -> str:
             # 处理特殊字符和占位符
             processed_line = line.replace('%', '\\%').replace('>', '\\textgreater{}').replace('<', '\\textless{}')
             processed_line = processed_line.replace('{{', '').replace('}}', '')
+            # 处理特殊数学符号
+            processed_line = processed_line.replace('≥', '$\\geq$').replace('≤', '$\\leq$')
+            processed_line = processed_line.replace('>', '$>$').replace('<', '$<$')
             latex_lines.append(processed_line)
     
-    # 确保itemize环境正确关闭
-    if any(l.startswith('\\item') for l in latex_lines) and not any(l == '\\end{itemize}' for l in latex_lines):
+    # 确保所有itemize环境都正确关闭
+    while itemize_stack:
         latex_lines.append('\\end{itemize}')
+        itemize_stack.pop()
     
     return '\n'.join(latex_lines)
 

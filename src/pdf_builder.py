@@ -24,13 +24,14 @@ from .latex_renderer import markdown_to_latex, render_main_tex
 
 # 尝试使用兼容的模板，避免字体问题
 def get_default_template() -> Path:
-    """获取默认的LaTeX模板，优先使用兼容版本"""
+    """获取默认的LaTeX模板，优先使用中文兼容版本"""
     # 按优先级尝试不同的模板
     templates = [
-        Path("templates/main_english.tex"),    # 英文模板，避免中文字体问题
-        Path("templates/main_simple.tex"),     # 最简单的模板
-        Path("templates/main_compatible.tex"), # 兼容性好的模板
-        Path("templates/main.tex"),           # 原始模板
+        Path("templates/main_chinese_simple.tex"), # 新的中文兼容模板，优先使用
+        Path("templates/main_compatible.tex"),    # 兼容性好的中文模板
+        Path("templates/main.tex"),              # 原始中文模板
+        Path("templates/main_english.tex"),      # 英文模板（备用）
+        Path("templates/main_simple.tex"),       # 最简单的英文模板（最后备用）
     ]
     
     for template in templates:
@@ -104,7 +105,15 @@ def build_pdf(requirements: Path, kb: Path, out: Path, *, latex_template: Path |
         pbar.update(1)
         
         meta_path = workdir / "meta.json"
-        meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+        # 修复JSON编码问题，确保中文字符正确处理
+        try:
+            meta_json = json.dumps(meta, ensure_ascii=False, indent=2, default=str)
+            meta_path.write_text(meta_json, encoding="utf-8")
+        except Exception as e:
+            logger.warning(f"JSON写入失败，尝试使用ASCII编码: {e}")
+            # 备用方案：使用ASCII编码
+            meta_json = json.dumps(meta, ensure_ascii=True, indent=2, default=str)
+            meta_path.write_text(meta_json, encoding="utf-8")
         pbar.update(1)
     
     print("📄 编译PDF...")
@@ -116,57 +125,9 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     """Compile LaTeX into PDF using multiple methods with better error handling."""
     workdir = tex_path.parent
     
-    # 方法1: 尝试使用pdflatex（最兼容）
+    # 方法1: 优先使用xelatex（最适合中文）
     try:
-        logger.info("尝试使用pdflatex编译...")
-        cmd = ["pdflatex", "-interaction=nonstopmode", "-shell-escape", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("pdflatex编译成功")
-        
-        # 查找生成的PDF文件
-        built_pdf = workdir / (tex_path.stem + ".pdf")
-        if built_pdf.exists() and built_pdf.stat().st_size > 0:
-            out_pdf.parent.mkdir(parents=True, exist_ok=True)
-            built_pdf.rename(out_pdf)
-            logger.info(f"PDF生成成功: {out_pdf}")
-            return
-        else:
-            logger.warning("pdflatex未生成有效PDF文件，尝试其他方法")
-            
-    except FileNotFoundError:
-        logger.warning("pdflatex未找到，尝试其他方法")
-    except subprocess.CalledProcessError as exc:
-        logger.warning(f"pdflatex编译失败: {exc.stderr}")
-    except UnicodeDecodeError as e:
-        logger.warning(f"pdflatex编码错误: {e}，尝试其他方法")
-    
-    # 方法2: 尝试使用latexmk
-    try:
-        logger.info("尝试使用latexmk编译...")
-        cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("latexmk编译成功")
-        
-        # 查找生成的PDF文件
-        built_pdf = workdir / (tex_path.stem + ".pdf")
-        if built_pdf.exists() and built_pdf.stat().st_size > 0:
-            out_pdf.parent.mkdir(parents=True, exist_ok=True)
-            built_pdf.rename(out_pdf)
-            logger.info(f"PDF生成成功: {out_pdf}")
-            return
-        else:
-            logger.warning("latexmk未生成有效PDF文件，尝试其他方法")
-            
-    except FileNotFoundError:
-        logger.warning("latexmk未找到，尝试其他方法")
-    except subprocess.CalledProcessError as exc:
-        logger.warning(f"latexmk编译失败: {exc.stderr}")
-    except UnicodeDecodeError as e:
-        logger.warning(f"latexmk编码错误: {e}，尝试其他方法")
-    
-    # 方法3: 尝试使用xelatex
-    try:
-        logger.info("使用xelatex编译...")
+        logger.info("使用xelatex编译中文LaTeX...")
         # 第一次编译
         cmd1 = ["xelatex", "-interaction=nonstopmode", tex_path.name]
         result1 = subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
@@ -180,25 +141,99 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
         built_pdf = workdir / (tex_path.stem + ".pdf")
         if built_pdf.exists() and built_pdf.stat().st_size > 0:
             out_pdf.parent.mkdir(parents=True, exist_ok=True)
+            # 如果输出文件已存在，先删除
+            if out_pdf.exists():
+                out_pdf.unlink()
             built_pdf.rename(out_pdf)
             logger.info(f"PDF生成成功: {out_pdf}")
             return
         else:
-            # 尝试查找.xdv文件并转换
-            xdv_file = workdir / (tex_path.stem + ".xdv")
-            if xdv_file.exists():
-                logger.info("找到.xdv文件，尝试转换为PDF...")
-                cmd_convert = ["xdvipdfmx", xdv_file.name, "-o", out_pdf.name]
-                subprocess.run(cmd_convert, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-                logger.info(f"PDF转换成功: {out_pdf}")
-                return
-                
+            logger.warning("xelatex未生成有效PDF文件，尝试其他方法")
+            # 尝试查找其他可能的PDF文件
+            pdf_files = list(workdir.glob("*.pdf"))
+            if pdf_files:
+                largest_pdf = max(pdf_files, key=lambda x: x.stat().st_size)
+                if largest_pdf.stat().st_size > 1000:  # 大于1KB的PDF文件
+                    logger.info(f"找到生成的PDF文件: {largest_pdf}")
+                    out_pdf.parent.mkdir(parents=True, exist_ok=True)
+                    if out_pdf.exists():
+                        out_pdf.unlink()
+                    largest_pdf.rename(out_pdf)
+                    logger.info(f"PDF重命名成功: {out_pdf}")
+                    return
+            
     except FileNotFoundError:
-        logger.error("xelatex未找到；请安装TeX发行版")
+        logger.warning("xelatex未找到，尝试其他方法")
     except subprocess.CalledProcessError as exc:
-        logger.error(f"xelatex编译失败: {exc.stderr}")
+        logger.warning(f"xelatex编译失败: {exc.stderr}")
     except UnicodeDecodeError as e:
-        logger.error(f"xelatex编码错误: {e}")
+        logger.warning(f"xelatex编码错误: {e}，尝试其他方法")
+    
+    # 方法2: 尝试使用pdflatex（最兼容）
+    try:
+        logger.info("尝试使用pdflatex编译...")
+        cmd = ["pdflatex", "-interaction=nonstopmode", "-shell-escape", tex_path.name]
+        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        logger.info("pdflatex编译成功")
+        
+        # 查找生成的PDF文件
+        built_pdf = workdir / (tex_path.stem + ".pdf")
+        if built_pdf.exists() and built_pdf.stat().st_size > 0:
+            out_pdf.parent.mkdir(parents=True, exist_ok=True)
+            # 如果输出文件已存在，先删除
+            if out_pdf.exists():
+                out_pdf.unlink()
+            built_pdf.rename(out_pdf)
+            logger.info(f"PDF生成成功: {out_pdf}")
+            return
+        else:
+            logger.warning("pdflatex未生成有效PDF文件，尝试其他方法")
+            # 尝试查找其他可能的PDF文件
+            pdf_files = list(workdir.glob("*.pdf"))
+            if pdf_files:
+                largest_pdf = max(pdf_files, key=lambda x: x.stat().st_size)
+                if largest_pdf.stat().st_size > 1000:  # 大于1KB的PDF文件
+                    logger.info(f"找到生成的PDF文件: {largest_pdf}")
+                    out_pdf.parent.mkdir(parents=True, exist_ok=True)
+                    if out_pdf.exists():
+                        out_pdf.unlink()
+                    largest_pdf.rename(out_pdf)
+                    logger.info(f"PDF重命名成功: {out_pdf}")
+                    return
+            
+    except FileNotFoundError:
+        logger.warning("pdflatex未找到，尝试其他方法")
+    except subprocess.CalledProcessError as exc:
+        logger.warning(f"pdflatex编译失败: {exc.stderr}")
+    except UnicodeDecodeError as e:
+        logger.warning(f"pdflatex编码错误: {e}，尝试其他方法")
+    
+    # 方法3: 尝试使用latexmk
+    try:
+        logger.info("尝试使用latexmk编译...")
+        cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name]
+        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        logger.info("latexmk编译成功")
+        
+        # 查找生成的PDF文件
+        built_pdf = workdir / (tex_path.stem + ".pdf")
+        if built_pdf.exists() and built_pdf.stat().st_size > 0:
+            out_pdf.parent.mkdir(parents=True, exist_ok=True)
+            # 如果输出文件已存在，先删除
+            if out_pdf.exists():
+                out_pdf.unlink()
+            built_pdf.rename(out_pdf)
+            logger.info(f"PDF生成成功: {out_pdf}")
+            return
+        else:
+            logger.warning("latexmk未生成有效PDF文件，尝试其他方法")
+            
+    except FileNotFoundError:
+        logger.warning("latexmk未找到，尝试其他方法")
+    except subprocess.CalledProcessError as exc:
+        logger.warning(f"latexmk编译失败: {exc.stderr}")
+    except UnicodeDecodeError as e:
+        logger.warning(f"latexmk编码错误: {e}，尝试其他方法")
     
     # 如果所有方法都失败，尝试创建一个简单的PDF
     try:

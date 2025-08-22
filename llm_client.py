@@ -51,15 +51,17 @@ class LLMClient:
 
         if self.models is None:
             self.models = [
-                "qwen-plus-2025-01-25",
-                "qwen-plus-1125",
-                "qwen-plus-1127",
                 "qwen-plus-1220",
                 "qwen-plus-0112",
                 "qwen-plus-0919",
                 "qwen-plus-0723",
                 "qwen-plus-0806",
             ]
+        
+        # 确保模型索引在有效范围内
+        if self._model_index >= len(self.models):
+            self._model_index = 0
+            
         dashscope.api_key = self.api_key
 
     @property

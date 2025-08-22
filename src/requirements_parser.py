@@ -99,14 +99,25 @@ def parse_requirements(path: Path, *, client: Client, cache: LLMCache, use_llm: 
     if use_llm:
         try:
             system = (
-                "You convert requirement lists provided in JSON/CSV/Markdown/PDF into a JSON array "
-                "of objects with fields id,title,keywords,source,notes,weight,response_type,section. keywords is a list of strings. "
-                "response_type is either 'generate' for content to be written by the system or 'copy' for text that should be copied directly from the source. "
-                "section is the related document section if specified. "
-                "CRITICAL: Return ONLY valid JSON array, no explanations, no reasoning, no other text. "
-                "Start with [ and end with ]. No text before or after the JSON."
+                "你是一名专业的招标文件分析专家。请分析招标文件内容，提取出需要响应的关键要求，并转换为结构化的JSON格式。\n\n"
+                "分析要求：\n"
+                "1. 识别招标文件中的商务要求、技术要求、资质要求等\n"
+                "2. 为每个要求生成有意义的标题，避免使用'默认需求'这样的无意义标题\n"
+                "3. 提取关键词，帮助后续内容生成\n"
+                "4. 分析要求的权重和重要性\n"
+                "5. 确定响应类型（generate表示需要生成内容，copy表示直接复制）\n\n"
+                "输出格式：JSON数组，每个对象包含以下字段：\n"
+                "- id: 唯一标识符\n"
+                "- title: 有意义的标题（如'技术方案要求'、'资质要求'、'项目实施要求'等）\n"
+                "- keywords: 关键词列表\n"
+                "- source: 来源说明\n"
+                "- notes: 详细说明\n"
+                "- weight: 权重（1.0-5.0）\n"
+                "- response_type: 'generate'或'copy'\n"
+                "- section: 文档章节\n\n"
+                "CRITICAL: 只返回有效的JSON数组，不要解释、推理或其他文字。以[开始，以]结束。"
             )
-            user = f"Input content:\n{text}\nReturn JSON array only."
+            user = f"招标文件内容:\n{text}\n\n请分析并返回JSON数组。"
             data = llm_json(client, system, user, cache)
             items_raw = data if isinstance(data, list) else data.get("items", [])
         except Exception as e:
