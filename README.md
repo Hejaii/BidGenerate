@@ -13,9 +13,7 @@
 4. **合并生成 Markdown** — [src/content_merge.py](src/content_merge.py)
 5. **Markdown 转 LaTeX** — [src/latex_renderer.py](src/latex_renderer.py)
 6. **渲染模板并编译 PDF** — [src/pdf_builder.py](src/pdf_builder.py)
-
 7. **表格抽取** — [src/table_extractor.py](src/table_extractor.py)
-
 
 ## 项目特色
 
