@@ -5,13 +5,26 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 import logging
+import os
+from datetime import datetime
 try:
     import tomllib
 except ImportError:
     import toml as tomllib
-from tqdm import tqdm
+try:  # pragma: no cover - fallback when tqdm is not installed
+    from tqdm import tqdm
+except ModuleNotFoundError:  # pragma: no cover
+    from contextlib import contextmanager
+
+    @contextmanager
+    def tqdm(*args, **kwargs):
+        class Dummy:
+            def update(self, *a, **k):
+                pass
+
+        yield Dummy()
 
 from llm_client import LLMClient as Client
 from .logging_utils import get_logger
@@ -24,12 +37,12 @@ from .latex_renderer import markdown_to_latex, render_main_tex
 
 # 尝试使用兼容的模板，避免字体问题
 def get_default_template() -> Path:
-    """获取默认的LaTeX模板，优先使用中文兼容版本"""
-    # 按优先级尝试不同的模板
+    """获取默认的LaTeX模板，优先使用规范版模板"""
+    # 按优先级尝试不同的模板，首选 main.tex 以确保编号和目录样式规范
     templates = [
-        Path("templates/main_chinese_simple.tex"), # 新的中文兼容模板，优先使用
+        Path("templates/main.tex"),              # 原始规范模板，包含完整编号/目录样式
+        Path("templates/main_chinese_simple.tex"), # 中文兼容模板
         Path("templates/main_compatible.tex"),    # 兼容性好的中文模板
-        Path("templates/main.tex"),              # 原始中文模板
         Path("templates/main_english.tex"),      # 英文模板（备用）
         Path("templates/main_simple.tex"),       # 最简单的英文模板（最后备用）
     ]
@@ -44,21 +57,91 @@ def get_default_template() -> Path:
 DEFAULT_TEMPLATE = get_default_template()
 
 
-def load_config() -> Dict:
-    path = Path("pyproject.toml")
+def load_config(path: Optional[Path] = None) -> Dict:
+    """Load build configuration from a TOML file.
+
+    If ``path`` is ``None`` the function attempts to read ``pyproject.toml``
+    in the current working directory. This allows callers (or CLI users) to
+    supply an explicit configuration file without relying on project-level
+    defaults.
+    """
+    path = path or Path("pyproject.toml")
     if path.exists():
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         return data.get("tool", {}).get("build_pdf", {})
     return {}
 
 
-def build_pdf(requirements: Path, kb: Path, out: Path, *, latex_template: Path | None = None, workdir: Path | None = None, topk: int = 5, use_llm: bool = True) -> None:
+def format_bid_date(value: str) -> str:
+    """将多种输入格式的日期标准化为 ``YYYY年MM月DD日`` 或 ``YYYY年MM月``。
+
+    标书中有时仅给出年和月，此时输出 ``YYYY年MM月``；若提供具体日期则
+    统一格式为 ``YYYY年MM月DD日``。
+    """
+    formats = {
+        "%Y-%m-%d": "%Y年%m月%d日",
+        "%Y/%m/%d": "%Y年%m月%d日",
+        "%Y年%m月%d日": "%Y年%m月%d日",
+        "%Y年%m月%d": "%Y年%m月%d日",
+        "%Y年%m月": "%Y年%m月",
+    }
+    for fmt, out_fmt in formats.items():
+        try:
+            dt = datetime.strptime(value, fmt)
+            return dt.strftime(out_fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid bid_date format: {value}")
+
+
+def apply_project_config(project: Dict[str, str]) -> None:
+    """根据配置设置项目相关环境变量，并校验必填字段"""
+    if not project:
+        return
+
+    mapping = {
+        "bid_title": "BID_TITLE",
+        "bid_doc_type": "BID_DOC_TYPE",
+        "project_no": "PROJECT_NO",
+        "project_name": "PROJECT_NAME",
+        "package_name": "PACKAGE_NAME",
+        "package_no": "PACKAGE_NO",
+        "supplier_name": "SUPPLIER_NAME",
+        "bid_date": "BID_DATE",
+    }
+
+    required = ["project_no", "bid_date"]
+    missing = [k for k in required if not project.get(k)]
+    if missing:
+        raise ValueError(f"Missing project field(s): {', '.join(missing)}")
+
+    for key, env in mapping.items():
+        val = project.get(key)
+        if val:
+            if key == "bid_date":
+                val = format_bid_date(val)
+            os.environ[env] = val
+
+
+def build_pdf(
+    requirements: Path,
+    kb: Path,
+    out: Path,
+    *,
+    latex_template: Path | None = None,
+    workdir: Path | None = None,
+    topk: int = 5,
+    use_llm: bool = True,
+    config_path: Path | None = None,
+) -> None:
     """Main pipeline to build PDF."""
     workdir = workdir or Path("build")
     workdir.mkdir(parents=True, exist_ok=True)
     logger = get_logger("build_pdf", workdir)
     cache = LLMCache(workdir / "cache")
-    config = load_config()
+    config = load_config(config_path)
+    # 将配置中的项目元信息注入到环境变量中
+    apply_project_config(config.get("project", {}))
     temperature = config.get("temperature")
     # 强制使用百炼模型客户端，禁止本地启发式
     client = Client(models=None, temperature=temperature if temperature is not None else 0.2)
@@ -271,10 +354,20 @@ def main() -> None:
     parser.add_argument("--workdir", type=Path, default=Path("build"))
     parser.add_argument("--topk", type=int, default=5)
     parser.add_argument("--use-llm", type=str, default="true")
+    parser.add_argument("--config", type=Path, default=None, help="Path to TOML config")
 
     args = parser.parse_args()
     use_llm = args.use_llm.lower() == "true"
-    build_pdf(args.requirements, args.kb, args.out, latex_template=args.latex_template, workdir=args.workdir, topk=args.topk, use_llm=use_llm)
+    build_pdf(
+        args.requirements,
+        args.kb,
+        args.out,
+        latex_template=args.latex_template,
+        workdir=args.workdir,
+        topk=args.topk,
+        use_llm=use_llm,
+        config_path=args.config,
+    )
 
 
 if __name__ == "__main__":
