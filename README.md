@@ -4,6 +4,17 @@
 
 本项目是一个面向各类招投标场景的智能化标书生成系统，能够根据招标文件自动解析需求、检索资料并生成规范的投标响应文档。
 系统以大语言模型（LLM）为核心，结合知识库检索与 LaTeX 排版，实现从需求提取到 PDF 输出的完整流程。
+
+## 构建管线
+
+1. **加载配置与模板** — [build_pdf.py](build_pdf.py)
+2. **解析需求** — [src/requirements_parser.py](src/requirements_parser.py)
+3. **扫描知识库并检索相关内容** — [src/kb_search.py](src/kb_search.py)
+4. **合并生成 Markdown** — [src/content_merge.py](src/content_merge.py)
+5. **Markdown 转 LaTeX** — [src/latex_renderer.py](src/latex_renderer.py)
+6. **渲染模板并编译 PDF** — [src/pdf_builder.py](src/pdf_builder.py)
+7. **表格抽取（可选）** — [src/table_extractor.py](src/table_extractor.py)
+
 ## 项目特色
 
 -  **智能驱动**：基于LLM（大语言模型）的智能内容生成
@@ -29,7 +40,8 @@
 │   ├── content_merge.py           # 内容合并
 │   ├── latex_renderer.py          # LaTeX渲染器
 │   ├── caching.py                 # 缓存管理
-│   └── logging_utils.py           # 日志工具
+│   ├── logging_utils.py           # 日志工具
+│   └── table_extractor.py         # PDF表格提取工具
 │
 ├── 📁 scripts/                    # 脚本工具目录
 │   ├── pdf_extractor.py           # PDF内容提取
@@ -100,6 +112,7 @@
 - **PDF生成**：自动生成符合要求的投标文件
 - **分页布局**：每条需求自动分页呈现，避免内容过于紧凑
 - **需求分类**：LLM区分需生成文字与需原文复制的条目
+- **表格识别**：从招标PDF提取表格并转换为LaTeX
 
 ### 2. 技术方案设计
 - **系统架构**：分层架构设计，支持扩展
@@ -156,7 +169,7 @@ export DASHSCOPE_API_KEY="your-api-key-here"
 
 1. **生成投标文件**
 ```bash
-python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchard-bid --out bid_document.pdf
+python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchard-bid --out bid_document.pdf --config pyproject.toml
 ```
 
 2. **提取文档内容**
@@ -179,7 +192,12 @@ python -m pytest tests/
 - 修改 `config.py` 中的参数
 - 调整温度和最大token数
 
-3. **扩展知识库**
+3. **配置项目信息**
+- 在 `pyproject.toml` 的 `[tool.build_pdf.project]` 中设置 `project_no`、`bid_date` 等字段
+- 或者在命令中通过 `--config custom.toml` 指定其他配置文件
+- `bid_date` 支持 `YYYY年MM月`、`YYYY-MM-DD` 等多种输入格式，程序会统一标准化
+
+4. **扩展知识库**
 - 在 `litchi-smart-orchard-bid/` 目录添加文档
 - 更新文档结构和内容
 
@@ -191,7 +209,7 @@ python -m pytest tests/
 python scripts/simple_pdf_generator.py
 
 # 使用LLM生成器
-python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchard-bid --out test_bid.pdf --topk 3
+python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchard-bid --out test_bid.pdf --topk 3 --config pyproject.toml
 ```
 
 ### 示例2：端到端运行（先提取需求再生成PDF）
