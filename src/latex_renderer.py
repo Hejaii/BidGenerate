@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import os
 import re
+from typing import List
 
 from llm_client import LLMClient as Client
 from .caching import LLMCache, llm_rewrite
@@ -106,30 +107,42 @@ def _fix_itemize_environments(latex: str) -> str:
 def _simple_markdown_to_latex(markdown: str) -> str:
     """Simple Markdown to LaTeX conversion without LLM."""
     lines = markdown.split('\n')
-    latex_lines = []
-    itemize_stack = []  # 跟踪itemize环境的嵌套
-    
-    for line in lines:
-        line = line.strip()
+    latex_lines: List[str] = []
+    itemize_stack: List[bool] = []  # 跟踪itemize环境的嵌套
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
         if not line:
             latex_lines.append('')
+            i += 1
             continue
-            
+
+        # 表格处理：连续的'|'开头行视为Markdown表格
+        if line.startswith('|') and '|' in line[1:]:
+            # 在处理表格前关闭所有未关闭的itemize环境
+            while itemize_stack:
+                latex_lines.append('\\end{itemize}')
+                itemize_stack.pop()
+            table_lines = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                table_lines.append(lines[i].strip())
+                i += 1
+            latex_lines.extend(_markdown_table_to_latex(table_lines))
+            continue
+
         # 检查是否是标题行
         if line.startswith('# '):
-            # 关闭所有未关闭的itemize环境
             while itemize_stack:
                 latex_lines.append('\\end{itemize}')
                 itemize_stack.pop()
             latex_lines.append(f"\\section{{{line[2:]}}}")
         elif line.startswith('## '):
-            # 关闭所有未关闭的itemize环境
             while itemize_stack:
                 latex_lines.append('\\end{itemize}')
                 itemize_stack.pop()
             latex_lines.append(f"\\subsection{{{line[3:]}}}")
         elif line.startswith('### '):
-            # 关闭所有未关闭的itemize环境
             while itemize_stack:
                 latex_lines.append('\\end{itemize}')
                 itemize_stack.pop()
@@ -141,7 +154,6 @@ def _simple_markdown_to_latex(markdown: str) -> str:
             latex_lines.append(f"\\item {line[2:]}")
         elif line.startswith('**') and line.endswith('**'):
             content = line[2:-2]
-            # 处理占位符
             content = content.replace('{{', '').replace('}}', '')
             latex_lines.append(f"\\textbf{{{content}}}")
         elif line.startswith('`') and line.endswith('`'):
@@ -152,20 +164,61 @@ def _simple_markdown_to_latex(markdown: str) -> str:
             latex_lines.append('\\hrule')
             latex_lines.append('\\vspace{0.5cm}')
         else:
-            # 处理特殊字符和占位符
-            processed_line = line.replace('%', '\\%').replace('>', '\\textgreater{}').replace('<', '\\textless{}')
-            processed_line = processed_line.replace('{{', '').replace('}}', '')
-            # 处理特殊数学符号
+            processed_line = _escape_latex(line)
             processed_line = processed_line.replace('≥', '$\\geq$').replace('≤', '$\\leq$')
             processed_line = processed_line.replace('>', '$>$').replace('<', '$<$')
+            processed_line = processed_line.replace('{{', '').replace('}}', '')
             latex_lines.append(processed_line)
-    
-    # 确保所有itemize环境都正确关闭
+        i += 1
+
     while itemize_stack:
         latex_lines.append('\\end{itemize}')
         itemize_stack.pop()
-    
+
     return '\n'.join(latex_lines)
+
+
+def _markdown_table_to_latex(lines: List[str]) -> List[str]:
+    """Convert markdown table lines to LaTeX tabular."""
+    rows = []
+    for ln in lines:
+        cells = [c.strip() for c in ln.strip('|').split('|')]
+        rows.append(cells)
+    # 判断第二行是否为分隔行
+    if len(rows) >= 2 and all(set(c.replace('-', '').replace(':', '')) == set() for c in rows[1]):
+        header = rows[0]
+        body = rows[2:]
+    else:
+        header = rows[0]
+        body = rows[1:]
+    cols = len(header)
+    col_spec = ' | '.join(['l'] * cols)
+    latex = [r'\begin{tabular}{' + col_spec + '}', r'\hline']
+    latex.append(' & '.join(_escape_latex(c) for c in header) + r' \\')
+    latex.append(r'\hline')
+    for row in body:
+        latex.append(' & '.join(_escape_latex(c) for c in row) + r' \\')
+        latex.append(r'\hline')
+    latex.append(r'\end{tabular}')
+    return latex
+
+
+def _escape_latex(text: str) -> str:
+    replacements = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\textasciicircum{}',
+        '\\': r'\textbackslash{}',
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
 
 
 def render_main_tex(body: str, template_path: Path, output_path: Path) -> str:
