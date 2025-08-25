@@ -10,7 +10,7 @@
 1. **加载配置与模板** — [build_pdf.py](build_pdf.py)
 2. **解析需求** — [src/requirements_parser.py](src/requirements_parser.py)
 3. **扫描知识库并检索相关内容** — [src/kb_search.py](src/kb_search.py)
-4. **合并生成 Markdown** — [src/content_merge.py](src/content_merge.py)
+4. **大纲撰写与分段生成 Markdown** — [src/content_merge.py](src/content_merge.py)
 5. **Markdown 转 LaTeX** — [src/latex_renderer.py](src/latex_renderer.py)
 6. **渲染模板并编译 PDF** — [src/pdf_builder.py](src/pdf_builder.py)
 7. **表格抽取** — [src/table_extractor.py](src/table_extractor.py)
@@ -37,7 +37,7 @@
 │   ├── pdf_builder.py             # PDF构建核心逻辑
 │   ├── requirements_parser.py     # 需求解析器
 │   ├── kb_search.py               # 知识库搜索
-│   ├── content_merge.py           # 内容合并
+│   ├── content_merge.py           # 大纲驱动的内容生成
 │   ├── latex_renderer.py          # LaTeX渲染器
 │   ├── caching.py                 # 缓存管理
 │   ├── logging_utils.py           # 日志工具
@@ -108,7 +108,7 @@
 ### 1. 智能投标文件生成
 - **需求解析**：自动解析招标文件要求
 - **内容检索**：从知识库中智能检索相关内容
-- **内容合并**：在生成阶段通过提示词产出可直接拼接的片段，最终合并时无需再次调用LLM
+- **大纲撰写与分段生成**：先由LLM撰写大纲，再逐段生成内容并直接拼接，无需额外LLM合并
 - **PDF生成**：自动生成符合要求的投标文件
 - **分页布局**：每条需求自动分页呈现，避免内容过于紧凑
 - **需求分类**：LLM区分需生成文字与需原文复制的条目
@@ -136,7 +136,7 @@
 
 ### 核心算法
 - **语义搜索**：基于LLM的智能检索
-- **内容合并**：智能内容整合算法
+- **内容生成**：大纲驱动的分段生成
 - **文档生成**：自动化文档生成
 - **缓存优化**：智能缓存策略
 
