@@ -229,18 +229,18 @@ def main() -> None:
         print(f"❌ 内容检索失败: {e}")
         raise
 
-    # 步骤5: 生成并合并内容
-    progress.start_step("生成并合并内容", "使用LLM生成投标文件内容并合并")
+    # 步骤5: 大纲撰写与内容生成
+    progress.start_step("内容生成", "先撰写大纲，再分段生成并直接拼接内容")
     try:
         merged_md, meta = merge_contents(requirements, ranked, client=client, cache=cache, use_llm=True)
         md_path = workdir / "merged.md"
         md_path.write_text(merged_md, encoding="utf-8")
-        
+
         content_length = len(merged_md)
-        progress.end_step("生成并合并内容", f"生成了 {content_length} 字符的内容，保存到 {md_path}")
-        
+        progress.end_step("内容生成", f"生成了 {content_length} 字符的内容，保存到 {md_path}")
+
     except Exception as e:
-        progress.end_step("生成并合并内容", f"内容生成失败: {str(e)}")
+        progress.end_step("内容生成", f"内容生成失败: {str(e)}")
         print(f"❌ 内容生成失败: {e}")
         raise
 

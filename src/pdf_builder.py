@@ -170,9 +170,9 @@ def build_pdf(
             ranked[item.id] = rank_files(item, files, topk=topk, client=client, cache=cache, use_llm=True)
             pbar.update(1)
     
-    # 步骤4: 合并内容
-    print("📝 步骤4/5: 合并内容...")
-    with tqdm(total=1, desc="合并内容", unit="文档") as pbar:
+    # 步骤4: 生成内容
+    print("📝 步骤4/5: 生成内容...")
+    with tqdm(total=1, desc="生成内容", unit="文档") as pbar:
         merged_md, meta = merge_contents(requirements_items, ranked, client=client, cache=cache, use_llm=True)
         merged_md_path = workdir / "merged.md"
         merged_md_path.write_text(merged_md, encoding="utf-8")

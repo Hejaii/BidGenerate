@@ -33,7 +33,7 @@ src/
 ├── pdf_builder.py            # PDF构建核心逻辑
 ├── requirements_parser.py    # 需求解析器
 ├── kb_search.py              # 知识库搜索功能
-├── content_merge.py          # 内容合并算法
+├── content_merge.py          # 大纲驱动的内容生成算法
 ├── latex_renderer.py         # LaTeX渲染器
 ├── caching.py                # 缓存管理
 └── logging_utils.py          # 日志工具
