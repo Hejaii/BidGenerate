@@ -173,7 +173,15 @@ def build_pdf(
     # 步骤4: 生成内容
     print("📝 步骤4/5: 生成内容...")
     with tqdm(total=1, desc="生成内容", unit="文档") as pbar:
-        merged_md, meta = merge_contents(requirements_items, ranked, client=client, cache=cache, use_llm=True)
+        req_dir = workdir / "requirements"
+        merged_md, meta = merge_contents(
+            requirements_items,
+            ranked,
+            client=client,
+            cache=cache,
+            use_llm=True,
+            output_dir=req_dir,
+        )
         merged_md_path = workdir / "merged.md"
         merged_md_path.write_text(merged_md, encoding="utf-8")
         pbar.update(1)

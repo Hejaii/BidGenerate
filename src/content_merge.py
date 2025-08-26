@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, List, Tuple
+import re
 
 from llm_client import LLMClient as Client
 from .prompts_text import OUTLINE_SYSTEM, OUTLINE_USER, SEGMENT_SYSTEM, SEGMENT_USER
@@ -58,11 +59,19 @@ def merge_contents(
     client: Client,
     cache: LLMCache,
     use_llm: bool = True,
+    output_dir: Path | None = None,
 ) -> tuple[str, Dict]:
-    """Generate content via outline and segment generation then concatenate."""
+    """Generate content via outline and segment generation then concatenate.
+
+    If ``output_dir`` is provided, write each requirement's markdown response
+    to a separate file within that directory.
+    """
 
     sections: List[str] = []
     meta: Dict[str, Dict] = {}
+
+    if output_dir is not None:
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     with tqdm(total=len(requirements), desc="生成内容", unit="需求") as pbar:
         for req in requirements:
@@ -80,7 +89,7 @@ def merge_contents(
 
             if not snippets:
                 placeholder = f"针对招标要求 '{req.title}' 的响应内容正在准备中。"
-                sections.append(f"## {req.title}\n\n{placeholder}\n")
+                section_md = f"## {req.title}\n\n{placeholder}\n"
                 meta_item["selected"] = None
             else:
                 context = "\n\n".join(snippets)
@@ -98,7 +107,7 @@ def merge_contents(
                             "6. 返回纯文本段落，不要Markdown格式\n"
                             "7. 内容要具体、可操作，避免空泛的描述\n"
                             "8. 每个段落要有明确的主题和重点\n\n"
-                            "请生成高质量的投标文件内容。"
+                            "请生成高质量的投标文件内容。",
                         )
                         user = f"招标要求: {req.title}\n\n源文本:\n{context}"
                         merged = llm_rewrite(client, system, user, cache)
@@ -112,14 +121,20 @@ def merge_contents(
                 if not merged.strip().endswith("\\newpage"):
                     merged = merged.rstrip() + "\n\\newpage"
 
-                # 生成更有意义的标题
                 if req.title == "默认需求":
                     section_title = "项目技术方案与实施方案"
                 else:
                     section_title = req.title
-                
-                sections.append(f"# {section_title}\n\n{merged}\n")
+
+                section_md = f"# {section_title}\n\n{merged}\n"
                 meta_item["selected"] = [str(p) for p, _ in files]
+
+            sections.append(section_md)
+
+            if output_dir is not None:
+                safe_title = re.sub(r"[^a-zA-Z0-9_-]+", "_", req.title).strip("_")
+                file_path = output_dir / f"{req.id}_{safe_title}.md"
+                file_path.write_text(section_md, encoding="utf-8")
 
             meta[req.id] = meta_item
             pbar.update(1)
