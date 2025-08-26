@@ -1,0 +1,94 @@
+{
+  "001": {
+    "title": "付款方式与条件",
+    "candidates": [
+      {
+        "path": "litchi-smart-orchard-bid/项目风险评估报告.md",
+        "score": 0.0
+      },
+      {
+        "path": "litchi-smart-orchard-bid/质量保证计划.md",
+        "score": 0.0
+      },
+      {
+        "path": "litchi-smart-orchard-bid/安全文明施工方案.md",
+        "score": 0.0
+      }
+    ],
+    "outline": "简化生成",
+    "selected": [
+      "litchi-smart-orchard-bid/项目风险评估报告.md",
+      "litchi-smart-orchard-bid/质量保证计划.md",
+      "litchi-smart-orchard-bid/安全文明施工方案.md"
+    ]
+  },
+  "002": {
+    "title": "配合申请云资源及安全服务",
+    "candidates": [
+      {
+        "path": "litchi-smart-orchard-bid/项目风险评估报告.md",
+        "score": 0.1
+      },
+      {
+        "path": "litchi-smart-orchard-bid/README.md",
+        "score": 0.1
+      },
+      {
+        "path": "litchi-smart-orchard-bid/质量保证计划.md",
+        "score": 0.0
+      }
+    ],
+    "outline": "简化生成",
+    "selected": [
+      "litchi-smart-orchard-bid/项目风险评估报告.md",
+      "litchi-smart-orchard-bid/README.md",
+      "litchi-smart-orchard-bid/质量保证计划.md"
+    ]
+  },
+  "003": {
+    "title": "免费运行维护管理服务期限",
+    "candidates": [
+      {
+        "path": "litchi-smart-orchard-bid/项目风险评估报告.md",
+        "score": 0.0
+      },
+      {
+        "path": "litchi-smart-orchard-bid/质量保证计划.md",
+        "score": 0.0
+      },
+      {
+        "path": "litchi-smart-orchard-bid/安全文明施工方案.md",
+        "score": 0.0
+      }
+    ],
+    "outline": "简化生成",
+    "selected": [
+      "litchi-smart-orchard-bid/项目风险评估报告.md",
+      "litchi-smart-orchard-bid/质量保证计划.md",
+      "litchi-smart-orchard-bid/安全文明施工方案.md"
+    ]
+  },
+  "004": {
+    "title": "资质认证要求",
+    "candidates": [
+      {
+        "path": "litchi-smart-orchard-bid/质量保证计划.md",
+        "score": 0.8
+      },
+      {
+        "path": "litchi-smart-orchard-bid/安全文明施工方案.md",
+        "score": 0.2
+      },
+      {
+        "path": "litchi-smart-orchard-bid/README.md",
+        "score": 0.2
+      }
+    ],
+    "outline": "简化生成",
+    "selected": [
+      "litchi-smart-orchard-bid/质量保证计划.md",
+      "litchi-smart-orchard-bid/安全文明施工方案.md",
+      "litchi-smart-orchard-bid/README.md"
+    ]
+  }
+}

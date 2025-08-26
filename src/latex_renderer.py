@@ -31,7 +31,13 @@ def markdown_to_latex(markdown: str, *, client: Client, cache: LLMCache, use_llm
         - IMPORTANT: Every \\begin{itemize} must have a corresponding \\end{itemize}
         - Return ONLY the LaTeX content, no other text"""
         user = f"Convert this Markdown to LaTeX:\n\n{markdown}"
-        latex = llm_rewrite(client, system, user, cache)
+        
+        try:
+            latex = llm_rewrite(client, system, user, cache)
+        except Exception as e:
+            print(f"⚠️ LLM转换失败: {e}，使用备用转换")
+            latex = _simple_markdown_to_latex(markdown)
+            return latex
         
         # 清理LLM返回的文本
         latex = latex.strip()

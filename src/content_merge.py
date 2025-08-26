@@ -85,32 +85,39 @@ def merge_contents(
             else:
                 context = "\n\n".join(snippets)
                 if use_llm:
-                    outline = _write_outline(req, context, client=client, cache=cache)
-                    segments: List[str] = []
-                    prev = ""
-                    for line in outline.splitlines():
-                        item = line.strip()
-                        if not item:
-                            continue
-                        segment = _generate_segment(
-                            req,
-                            item,
-                            context,
-                            prev,
-                            client=client,
-                            cache=cache,
+                    try:
+                        # 简化内容生成，避免重复
+                        system = (
+                            "你是一名专业的投标文件撰写专家。请根据招标要求和源文本，生成高质量的投标文件内容。\n\n"
+                            "具体要求：\n"
+                            "1. 内容必须直接针对招标要求，具有明确的针对性\n"
+                            "2. 生成的内容应该是投标文件的具体组成部分，如技术方案、实施方案、管理方案等\n"
+                            "3. 避免生成通用的、泛化的内容\n"
+                            "4. 使用专业的技术术语和行业标准\n"
+                            "5. 内容结构清晰，逻辑性强\n"
+                            "6. 返回纯文本段落，不要Markdown格式\n"
+                            "7. 内容要具体、可操作，避免空泛的描述\n"
+                            "8. 每个段落要有明确的主题和重点\n\n"
+                            "请生成高质量的投标文件内容。"
                         )
-                        segments.append(segment.strip())
-                        prev = "\n\n".join(segments)
-                    merged = "\n\n".join(segments)
-                    meta_item["outline"] = outline
+                        user = f"招标要求: {req.title}\n\n源文本:\n{context}"
+                        merged = llm_rewrite(client, system, user, cache)
+                        meta_item["outline"] = "简化生成"
+                    except Exception as e:
+                        print(f"⚠️ 内容生成失败: {e}，使用原始内容")
+                        merged = context
                 else:
                     merged = context
 
                 if not merged.strip().endswith("\\newpage"):
                     merged = merged.rstrip() + "\n\\newpage"
 
-                section_title = "项目技术方案与实施方案" if req.title == "默认需求" else req.title
+                # 生成更有意义的标题
+                if req.title == "默认需求":
+                    section_title = "项目技术方案与实施方案"
+                else:
+                    section_title = req.title
+                
                 sections.append(f"# {section_title}\n\n{merged}\n")
                 meta_item["selected"] = [str(p) for p, _ in files]
 
