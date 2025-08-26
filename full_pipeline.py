@@ -232,7 +232,15 @@ def main() -> None:
     # 步骤5: 大纲撰写与内容生成
     progress.start_step("内容生成", "先撰写大纲，再分段生成并直接拼接内容")
     try:
-        merged_md, meta = merge_contents(requirements, ranked, client=client, cache=cache, use_llm=True)
+        req_dir = workdir / "requirements"
+        merged_md, meta = merge_contents(
+            requirements,
+            ranked,
+            client=client,
+            cache=cache,
+            use_llm=True,
+            output_dir=req_dir,
+        )
         md_path = workdir / "merged.md"
         md_path.write_text(merged_md, encoding="utf-8")
 
