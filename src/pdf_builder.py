@@ -123,6 +123,45 @@ def apply_project_config(project: Dict[str, str]) -> None:
             os.environ[env] = val
 
 
+def ensure_latex_env(logger: logging.Logger) -> None:
+    """Ensure XeLaTeX and Chinese fonts are available.
+
+    Some environments lack the LaTeX toolchain or CJK fonts which causes
+    errors like ``mktexpk: don't know how to create bitmap font for
+    unihei6c``.  This helper tries to install a minimal set of packages at
+    runtime so that PDF compilation has a better chance of succeeding.  The
+    installation is best-effort and failures are only logged.
+    """
+
+    try:
+        subprocess.run(["xelatex", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return  # xelatex already present
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        logger.info("xelatex not found; attempting to install TeX Live and fonts...")
+
+    try:
+        subprocess.run(["apt-get", "update"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(
+            [
+                "apt-get",
+                "install",
+                "-y",
+                "texlive-xetex",
+                "texlive-latex-recommended",
+                "texlive-fonts-recommended",
+                "texlive-lang-chinese",
+                "fonts-noto-cjk",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        subprocess.run(["fc-cache", "-fv"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        logger.info("LaTeX environment with Chinese fonts installed")
+    except Exception as exc:  # pragma: no cover - install is best effort
+        logger.warning("Failed to install LaTeX dependencies: %s", exc)
+
+
 def build_pdf(
     requirements: Path,
     kb: Path,
@@ -215,6 +254,9 @@ def build_pdf(
 def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     """Compile LaTeX into PDF using multiple methods with better error handling."""
     workdir = tex_path.parent
+
+    # Ensure basic LaTeX toolchain and fonts exist to avoid common failures
+    ensure_latex_env(logger)
     
     # 方法1: 优先使用xelatex（最适合中文）
     try:
