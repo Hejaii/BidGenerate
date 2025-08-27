@@ -95,23 +95,19 @@ def merge_contents(
                 context = "\n\n".join(snippets)
                 if use_llm:
                     try:
-                        # 简化内容生成，避免重复
-                        system = (
-                            "你是一名专业的投标文件撰写专家。请根据招标要求和源文本，生成高质量的投标文件内容。\n\n"
-                            "具体要求：\n"
-                            "1. 内容必须直接针对招标要求，具有明确的针对性\n"
-                            "2. 生成的内容应该是投标文件的具体组成部分，如技术方案、实施方案、管理方案等\n"
-                            "3. 避免生成通用的、泛化的内容\n"
-                            "4. 使用专业的技术术语和行业标准\n"
-                            "5. 内容结构清晰，逻辑性强\n"
-                            "6. 返回纯文本段落，不要Markdown格式\n"
-                            "7. 内容要具体、可操作，避免空泛的描述\n"
-                            "8. 每个段落要有明确的主题和重点\n\n"
-                            "请生成高质量的投标文件内容。",
-                        )
-                        user = f"招标要求: {req.title}\n\n源文本:\n{context}"
-                        merged = llm_rewrite(client, system, user, cache)
-                        meta_item["outline"] = "简化生成"
+                        outline = _write_outline(req, context, client=client, cache=cache)
+                        outline_items = [line.strip() for line in outline.splitlines() if line.strip()]
+                        segments: List[str] = []
+                        prev_text = ""
+                        for item in outline_items:
+                            segment = _generate_segment(
+                                req, item, context, prev_text, client=client, cache=cache
+                            )
+                            segment = segment.strip()
+                            segments.append(segment)
+                            prev_text = "\n\n".join(segments)
+                        merged = "\n\n".join(segments)
+                        meta_item["outline"] = outline
                     except Exception as e:
                         print(f"⚠️ 内容生成失败: {e}，使用原始内容")
                         merged = context
