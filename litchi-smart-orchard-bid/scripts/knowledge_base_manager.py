@@ -12,6 +12,10 @@ from typing import List, Dict, Any, Optional, Tuple
 import logging
 from pathlib import Path
 import re
+try:
+    import jieba
+except ImportError:  # pragma: no cover
+    jieba = None
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +47,7 @@ class KnowledgeBaseManager:
         self.chunks: List[DocumentChunk] = []
         self.chunk_embeddings: Dict[str, List[float]] = {}
         self.chunk_index: Dict[str, DocumentChunk] = {}
+        self.min_chunk_chars = 20
         
         # 文档类型映射
         self.doc_type_patterns = {
@@ -53,6 +58,11 @@ class KnowledgeBaseManager:
             "business": ["商务", "价格", "报价", "合同", "协议", "财务"],
             "management": ["管理", "组织", "计划", "风险", "质量", "安全"]
         }
+
+    def _tokenize(self, text: str) -> List[str]:
+        if jieba:
+            return [w for w in jieba.lcut(text) if w.strip()]
+        return [w for w in text.split() if w.strip()]
     
     def load_knowledge_base(self) -> None:
         """加载知识库"""
@@ -79,9 +89,9 @@ class KnowledgeBaseManager:
             chunks = self._split_by_headers(content)
             
             for i, chunk_content in enumerate(chunks):
-                if len(chunk_content.strip()) < 50:  # 过滤过短的内容
+                if len(chunk_content.strip()) < self.min_chunk_chars:
                     continue
-                
+
                 chunk_id = f"{file_path.stem}_{i:03d}"
                 chunk = DocumentChunk(
                     content=chunk_content.strip(),
@@ -90,10 +100,10 @@ class KnowledgeBaseManager:
                     metadata={
                         "file_type": "markdown",
                         "doc_type": self._classify_document(chunk_content),
-                        "word_count": len(chunk_content.split())
+                        "word_count": len(self._tokenize(chunk_content))
                     }
                 )
-                
+
                 self.chunks.append(chunk)
                 self.chunk_index[chunk_id] = chunk
                 
@@ -110,9 +120,9 @@ class KnowledgeBaseManager:
             paragraphs = content.split('\n\n')
             
             for i, para in enumerate(paragraphs):
-                if len(para.strip()) < 50:
+                if len(para.strip()) < self.min_chunk_chars:
                     continue
-                
+
                 chunk_id = f"{file_path.stem}_{i:03d}"
                 chunk = DocumentChunk(
                     content=para.strip(),
@@ -121,10 +131,10 @@ class KnowledgeBaseManager:
                     metadata={
                         "file_type": "text",
                         "doc_type": self._classify_document(para),
-                        "word_count": len(para.split())
+                        "word_count": len(self._tokenize(para))
                     }
                 )
-                
+
                 self.chunks.append(chunk)
                 self.chunk_index[chunk_id] = chunk
                 
@@ -132,24 +142,31 @@ class KnowledgeBaseManager:
             logger.error(f"处理文本文件失败 {file_path}: {e}")
     
     def _split_by_headers(self, content: str) -> List[str]:
-        """按标题分割Markdown文档"""
-        # 分割标题行
-        header_pattern = r'^#{1,6}\s+.+$'
+        """按标题分割Markdown文档，支持多级标题和无标题文本"""
+        header_re = re.compile(r'^(#{1,6})\s+.+$')
         lines = content.split('\n')
-        chunks = []
-        current_chunk = []
-        
+        chunks: List[str] = []
+        current_lines: List[str] = []
+        header_stack: List[str] = []
+
         for line in lines:
-            if re.match(header_pattern, line):
-                if current_chunk:
-                    chunks.append('\n'.join(current_chunk))
-                    current_chunk = []
-            current_chunk.append(line)
-        
-        if current_chunk:
-            chunks.append('\n'.join(current_chunk))
-        
-        return chunks
+            header_match = header_re.match(line)
+            if header_match:
+                level = len(header_match.group(1))
+                if current_lines:
+                    chunks.append('\n'.join(current_lines).strip())
+                header_stack = header_stack[:level-1]
+                header_stack.append(line)
+                current_lines = header_stack.copy()
+            else:
+                if not current_lines:
+                    current_lines = []
+                current_lines.append(line)
+
+        if current_lines:
+            chunks.append('\n'.join(current_lines).strip())
+
+        return [chunk for chunk in chunks if chunk]
     
     def _classify_document(self, content: str) -> str:
         """分类文档类型"""
@@ -165,11 +182,11 @@ class KnowledgeBaseManager:
     def search_relevant_chunks(self, query: str, top_k: int = 10) -> List[DocumentChunk]:
         """搜索相关文档块"""
         # 简单的关键词匹配搜索
-        query_words = set(query.lower().split())
+        query_words = set(self._tokenize(query.lower()))
         scored_chunks = []
-        
+
         for chunk in self.chunks:
-            chunk_words = set(chunk.content.lower().split())
+            chunk_words = set(self._tokenize(chunk.content.lower()))
             if query_words & chunk_words:
                 score = len(query_words & chunk_words) / len(query_words)
                 scored_chunks.append((score, chunk))
