@@ -258,16 +258,18 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     # Ensure basic LaTeX toolchain and fonts exist to avoid common failures
     ensure_latex_env(logger)
     
+    last_error: subprocess.CalledProcessError | None = None
+
     # 方法1: 优先使用xelatex（最适合中文）
     try:
         logger.info("使用xelatex编译中文LaTeX...")
         # 第一次编译
         cmd1 = ["xelatex", "-interaction=nonstopmode", tex_path.name]
-        result1 = subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, text=True)
         logger.info("第一次xelatex编译完成")
-        
+
         # 第二次编译（处理引用）
-        result2 = subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, text=True)
         logger.info("第二次xelatex编译完成")
         
         # 查找生成的PDF文件
@@ -298,7 +300,10 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     except FileNotFoundError:
         logger.warning("xelatex未找到，尝试其他方法")
     except subprocess.CalledProcessError as exc:
-        logger.warning(f"xelatex编译失败: {exc.stderr}")
+        last_error = exc
+        logger.warning(
+            "xelatex编译失败\nSTDOUT:\n%s\nSTDERR:\n%s", exc.stdout, exc.stderr
+        )
     except UnicodeDecodeError as e:
         logger.warning(f"xelatex编码错误: {e}，尝试其他方法")
     
@@ -306,7 +311,7 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     try:
         logger.info("尝试使用pdflatex编译...")
         cmd = ["pdflatex", "-interaction=nonstopmode", "-shell-escape", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, text=True)
         logger.info("pdflatex编译成功")
         
         # 查找生成的PDF文件
@@ -337,7 +342,10 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     except FileNotFoundError:
         logger.warning("pdflatex未找到，尝试其他方法")
     except subprocess.CalledProcessError as exc:
-        logger.warning(f"pdflatex编译失败: {exc.stderr}")
+        last_error = exc
+        logger.warning(
+            "pdflatex编译失败\nSTDOUT:\n%s\nSTDERR:\n%s", exc.stdout, exc.stderr
+        )
     except UnicodeDecodeError as e:
         logger.warning(f"pdflatex编码错误: {e}，尝试其他方法")
     
@@ -345,7 +353,7 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     try:
         logger.info("尝试使用latexmk编译...")
         cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, text=True)
         logger.info("latexmk编译成功")
         
         # 查找生成的PDF文件
@@ -364,7 +372,10 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
     except FileNotFoundError:
         logger.warning("latexmk未找到，尝试其他方法")
     except subprocess.CalledProcessError as exc:
-        logger.warning(f"latexmk编译失败: {exc.stderr}")
+        last_error = exc
+        logger.warning(
+            "latexmk编译失败\nSTDOUT:\n%s\nSTDERR:\n%s", exc.stdout, exc.stderr
+        )
     except UnicodeDecodeError as e:
         logger.warning(f"latexmk编码错误: {e}，尝试其他方法")
     
@@ -390,6 +401,11 @@ def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
         logger.error(f"生成简化PDF失败: {e}")
     
     logger.error("所有编译方法都失败了")
+    if last_error:
+        raise RuntimeError(
+            "PDF编译失败，请检查LaTeX环境配置\n"
+            f"最后一次错误输出:\nSTDOUT:\n{last_error.stdout}\nSTDERR:\n{last_error.stderr}"
+        )
     raise RuntimeError("PDF编译失败，请检查LaTeX环境配置")
 
 
