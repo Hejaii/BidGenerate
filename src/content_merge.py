@@ -135,6 +135,7 @@ def merge_contents(
                 context = "\n\n".join(snippets)
                 if use_llm:
                     try:
+
                         # 简化内容生成，避免重复
                         system = (
                             "你是一名专业的投标文件撰写专家。请根据招标要求和源文本，生成高质量的投标文件内容。\n\n"
@@ -161,6 +162,7 @@ def merge_contents(
                             user = f"招标要求: {req.title}\n\n源文本:\n{context}"
                             merged = llm_rewrite(client, system, user, cache)
                         meta_item["outline"] = "简化生成"
+
                     except Exception as e:
                         print(f"⚠️ 内容生成失败: {e}，使用原始内容")
                         merged = context
