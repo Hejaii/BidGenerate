@@ -143,7 +143,7 @@
 ### 部署要求
 - **操作系统**：Windows/macOS/Linux
 - **Python环境**：Python 3.8+
-- **TeX发行版**：支持XeLaTeX
+- **TeX发行版**：支持XeLaTeX，并安装 Noto CJK 字体
 - **内存要求**：建议8GB以上
 
 ## 快速开始
@@ -160,10 +160,15 @@ pip install -r requirements.txt
 export DASHSCOPE_API_KEY="your-api-key-here"
 ```
 
-3. **安装TeX发行版**
+3. **安装TeX发行版和 Noto CJK 字体**
 - Windows: 安装MiKTeX或TeX Live
 - macOS: 安装MacTeX
-- Linux: 安装TeX Live
+- Linux: 安装TeX Live 并安装中文字体
+  ```bash
+  sudo apt-get update && sudo apt-get install -y \
+      texlive-xetex texlive-latex-recommended texlive-fonts-recommended \
+      texlive-lang-chinese fonts-noto-cjk
+  ```
 
 ### 基本使用
 
