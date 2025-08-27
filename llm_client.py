@@ -42,6 +42,10 @@ class LLMClient:
     max_retries: int = 3
     temperature: float = 0.2
     max_tokens: int = 4000
+    # Maximum tokens allowed in the input context. This is a rough character
+    # based approximation but helps avoid sending overly long prompts which
+    # would be rejected by the API.
+    max_input_tokens: int = 6000
     _model_index: int = field(init=False, default=2)  # 从第三个模型开始，跳过前两个已用完免费额度的模型
     _request_counter: int = field(init=False, default=0)
 
@@ -82,6 +86,20 @@ class LLMClient:
         """Send chat messages to the model and return the response text."""
         temperature = temperature if temperature is not None else self.temperature
         max_tokens = max_tokens if max_tokens is not None else self.max_tokens
+        # Make a shallow copy so modifications do not affect caller and caching
+        # logic which relies on the original messages.
+        messages = [dict(m) for m in messages]
+
+        # Rough token counting using character length. If the combined input
+        # exceeds ``max_input_tokens`` we truncate the last message so that the
+        # request stays within the model's limit. This is a pragmatic safeguard
+        # and does not aim for exact token parity with the model's tokenizer.
+        total_len = sum(len(m.get("content", "")) for m in messages)
+        if total_len > self.max_input_tokens and messages:
+            allowed = self.max_input_tokens - (total_len - len(messages[-1].get("content", "")))
+            if allowed < 0:
+                allowed = 0
+            messages[-1]["content"] = messages[-1].get("content", "")[:allowed]
         attempt = 0
         while True:
             try:
