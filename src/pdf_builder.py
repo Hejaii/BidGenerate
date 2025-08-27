@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 import logging
 import os
 from datetime import datetime
+from .latex_env import ensure_latex_env
 try:
     import tomllib
 except ImportError:
@@ -252,148 +253,34 @@ def build_pdf(
 
 
 def compile_pdf(tex_path: Path, out_pdf: Path, logger: logging.Logger) -> None:
-    """Compile LaTeX into PDF using multiple methods with better error handling."""
+    """Compile LaTeX into PDF using XeLaTeX after ensuring environment."""
     workdir = tex_path.parent
-
-    # Ensure basic LaTeX toolchain and fonts exist to avoid common failures
     ensure_latex_env(logger)
-    
-    # 方法1: 优先使用xelatex（最适合中文）
-    try:
-        logger.info("使用xelatex编译中文LaTeX...")
-        # 第一次编译
-        cmd1 = ["xelatex", "-interaction=nonstopmode", tex_path.name]
-        result1 = subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("第一次xelatex编译完成")
-        
-        # 第二次编译（处理引用）
-        result2 = subprocess.run(cmd1, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("第二次xelatex编译完成")
-        
-        # 查找生成的PDF文件
-        built_pdf = workdir / (tex_path.stem + ".pdf")
-        if built_pdf.exists() and built_pdf.stat().st_size > 0:
-            out_pdf.parent.mkdir(parents=True, exist_ok=True)
-            # 如果输出文件已存在，先删除
-            if out_pdf.exists():
-                out_pdf.unlink()
-            built_pdf.rename(out_pdf)
-            logger.info(f"PDF生成成功: {out_pdf}")
-            return
-        else:
-            logger.warning("xelatex未生成有效PDF文件，尝试其他方法")
-            # 尝试查找其他可能的PDF文件
-            pdf_files = list(workdir.glob("*.pdf"))
-            if pdf_files:
-                largest_pdf = max(pdf_files, key=lambda x: x.stat().st_size)
-                if largest_pdf.stat().st_size > 1000:  # 大于1KB的PDF文件
-                    logger.info(f"找到生成的PDF文件: {largest_pdf}")
-                    out_pdf.parent.mkdir(parents=True, exist_ok=True)
-                    if out_pdf.exists():
-                        out_pdf.unlink()
-                    largest_pdf.rename(out_pdf)
-                    logger.info(f"PDF重命名成功: {out_pdf}")
-                    return
-            
-    except FileNotFoundError:
-        logger.warning("xelatex未找到，尝试其他方法")
-    except subprocess.CalledProcessError as exc:
-        logger.warning(f"xelatex编译失败: {exc.stderr}")
-    except UnicodeDecodeError as e:
-        logger.warning(f"xelatex编码错误: {e}，尝试其他方法")
-    
-    # 方法2: 尝试使用pdflatex（最兼容）
-    try:
-        logger.info("尝试使用pdflatex编译...")
-        cmd = ["pdflatex", "-interaction=nonstopmode", "-shell-escape", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("pdflatex编译成功")
-        
-        # 查找生成的PDF文件
-        built_pdf = workdir / (tex_path.stem + ".pdf")
-        if built_pdf.exists() and built_pdf.stat().st_size > 0:
-            out_pdf.parent.mkdir(parents=True, exist_ok=True)
-            # 如果输出文件已存在，先删除
-            if out_pdf.exists():
-                out_pdf.unlink()
-            built_pdf.rename(out_pdf)
-            logger.info(f"PDF生成成功: {out_pdf}")
-            return
-        else:
-            logger.warning("pdflatex未生成有效PDF文件，尝试其他方法")
-            # 尝试查找其他可能的PDF文件
-            pdf_files = list(workdir.glob("*.pdf"))
-            if pdf_files:
-                largest_pdf = max(pdf_files, key=lambda x: x.stat().st_size)
-                if largest_pdf.stat().st_size > 1000:  # 大于1KB的PDF文件
-                    logger.info(f"找到生成的PDF文件: {largest_pdf}")
-                    out_pdf.parent.mkdir(parents=True, exist_ok=True)
-                    if out_pdf.exists():
-                        out_pdf.unlink()
-                    largest_pdf.rename(out_pdf)
-                    logger.info(f"PDF重命名成功: {out_pdf}")
-                    return
-            
-    except FileNotFoundError:
-        logger.warning("pdflatex未找到，尝试其他方法")
-    except subprocess.CalledProcessError as exc:
-        logger.warning(f"pdflatex编译失败: {exc.stderr}")
-    except UnicodeDecodeError as e:
-        logger.warning(f"pdflatex编码错误: {e}，尝试其他方法")
-    
-    # 方法3: 尝试使用latexmk
-    try:
-        logger.info("尝试使用latexmk编译...")
-        cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name]
-        result = subprocess.run(cmd, cwd=workdir, check=True, capture_output=True, encoding='utf-8', errors='ignore')
-        logger.info("latexmk编译成功")
-        
-        # 查找生成的PDF文件
-        built_pdf = workdir / (tex_path.stem + ".pdf")
-        if built_pdf.exists() and built_pdf.stat().st_size > 0:
-            out_pdf.parent.mkdir(parents=True, exist_ok=True)
-            # 如果输出文件已存在，先删除
-            if out_pdf.exists():
-                out_pdf.unlink()
-            built_pdf.rename(out_pdf)
-            logger.info(f"PDF生成成功: {out_pdf}")
-            return
-        else:
-            logger.warning("latexmk未生成有效PDF文件，尝试其他方法")
-            
-    except FileNotFoundError:
-        logger.warning("latexmk未找到，尝试其他方法")
-    except subprocess.CalledProcessError as exc:
-        logger.warning(f"latexmk编译失败: {exc.stderr}")
-    except UnicodeDecodeError as e:
-        logger.warning(f"latexmk编码错误: {e}，尝试其他方法")
-    
-    # 如果所有方法都失败，尝试创建一个简单的PDF
-    try:
-        logger.info("尝试创建简单的PDF...")
-        import reportlab.pdfgen.canvas as canvas
-        from reportlab.lib.pagesizes import A4
-        
-        out_pdf.parent.mkdir(parents=True, exist_ok=True)
-        c = canvas.Canvas(str(out_pdf), pagesize=A4)
-        c.drawString(100, 750, "智能化荔枝果园管理系统项目")
-        c.drawString(100, 700, "公开招标响应文件")
-        c.drawString(100, 650, "由于LaTeX编译失败，生成了简化版PDF")
-        c.drawString(100, 600, "请检查LaTeX环境配置")
-        c.save()
-        logger.info(f"简化PDF生成成功: {out_pdf}")
-        return
-        
-    except ImportError:
-        logger.error("reportlab未安装，无法生成简化PDF")
-    except Exception as e:
-        logger.error(f"生成简化PDF失败: {e}")
-    
-    logger.error("所有编译方法都失败了")
-    raise RuntimeError("PDF编译失败，请检查LaTeX环境配置")
+    cmd = ["xelatex", "-interaction=nonstopmode", tex_path.name]
 
+    try:
+        subprocess.run(cmd, cwd=workdir, check=True)
+        subprocess.run(cmd, cwd=workdir, check=True)
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        logger.warning(f"xelatex failed: {exc}")
+        cmd = ["pdflatex", "-interaction=nonstopmode", tex_path.name]
+        try:
+            subprocess.run(cmd, cwd=workdir, check=True)
+            subprocess.run(cmd, cwd=workdir, check=True)
+        except (FileNotFoundError, subprocess.CalledProcessError) as exc2:
+            logger.error(f"pdflatex failed: {exc2}")
+            raise RuntimeError("PDF编译失败，请检查LaTeX环境配置") from exc2
+    built_pdf = workdir / (tex_path.stem + ".pdf")
+    if not built_pdf.exists():
+        raise RuntimeError("未生成PDF文件")
+    out_pdf.parent.mkdir(parents=True, exist_ok=True)
+    if out_pdf.exists():
+        out_pdf.unlink()
+    built_pdf.rename(out_pdf)
+    logger.info(f"PDF生成成功: {out_pdf}")
 
 def main() -> None:
+
     import argparse
 
     parser = argparse.ArgumentParser(description="Build PDF from requirements and knowledge base")
