@@ -52,6 +52,39 @@ def _generate_segment(
     return llm_rewrite(client, system, user, cache)
 
 
+def _split_text(text: str, max_len: int, overlap: int = 200) -> List[str]:
+    """Split ``text`` into chunks no longer than ``max_len`` with ``overlap``.
+
+    This operates on characters as a lightweight approximation of token
+    counting which is sufficient for guarding against over-long prompts."""
+
+    if max_len <= 0:
+        return [text]
+    chunks: List[str] = []
+    step = max_len - overlap
+    if step <= 0:
+        step = max_len
+    start = 0
+    text_len = len(text)
+    while start < text_len:
+        end = start + max_len
+        chunks.append(text[start:end])
+        start += step
+    return chunks
+
+
+def _summarize_long_text(text: str, *, client: Client, cache: LLMCache, max_len: int) -> str:
+    """Summarise ``text`` in windows if it exceeds ``max_len`` characters."""
+
+    if len(text) <= max_len:
+        return text
+    summaries: List[str] = []
+    system = "请在保留关键信息的前提下总结以下内容。"
+    for chunk in _split_text(text, max_len):
+        summaries.append(llm_rewrite(client, system, chunk, cache))
+    return "\n".join(summaries)
+
+
 def merge_contents(
     requirements: List[RequirementItem],
     ranked: Dict[str, List[Tuple[Path, float]]],
@@ -85,7 +118,14 @@ def merge_contents(
                     snippet = path.read_text(encoding="utf-8")
                 except Exception:
                     continue
-                snippets.append(snippet.strip())
+                # Ensure each snippet fits within the model's context window.
+                snippet = _summarize_long_text(
+                    snippet.strip(),
+                    client=client,
+                    cache=cache,
+                    max_len=client.max_input_tokens,
+                )
+                snippets.append(snippet)
 
             if not snippets:
                 placeholder = f"针对招标要求 '{req.title}' 的响应内容正在准备中。"
@@ -109,8 +149,17 @@ def merge_contents(
                             "8. 每个段落要有明确的主题和重点\n\n"
                             "请生成高质量的投标文件内容。",
                         )
-                        user = f"招标要求: {req.title}\n\n源文本:\n{context}"
-                        merged = llm_rewrite(client, system, user, cache)
+                        # If the combined context is still too long, generate in
+                        # sliding windows and concatenate the results.
+                        if len(context) > client.max_input_tokens:
+                            merged_parts: List[str] = []
+                            for ctx_chunk in _split_text(context, client.max_input_tokens):
+                                user = f"招标要求: {req.title}\n\n源文本:\n{ctx_chunk}"
+                                merged_parts.append(llm_rewrite(client, system, user, cache))
+                            merged = "\n".join(merged_parts)
+                        else:
+                            user = f"招标要求: {req.title}\n\n源文本:\n{context}"
+                            merged = llm_rewrite(client, system, user, cache)
                         meta_item["outline"] = "简化生成"
                     except Exception as e:
                         print(f"⚠️ 内容生成失败: {e}，使用原始内容")
