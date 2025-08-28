@@ -79,15 +79,34 @@ class LLMClient:
             self._model_index = 0
         print(f"✅ 现在使用模型: {self.model}")
 
-    def chat(self, messages: List[Dict[str, str]], *,
+    def chat(self, messages: List[Dict[str, str] | str], *,
              temperature: Optional[float] = None,
              max_tokens: Optional[int] = None) -> str:
-        """Send chat messages to the model and return the response text."""
+        """Send chat messages to the model and return the response text.
+
+        The method is tolerant to slightly malformed input. Each element in
+        ``messages`` can be either a plain string (assumed to be a ``user``
+        message) or a mapping with optional ``role`` and ``content`` keys. The
+        list is normalised into the structure required by DashScope before
+        making the API call.
+        """
         temperature = temperature if temperature is not None else self.temperature
         max_tokens = max_tokens if max_tokens is not None else self.max_tokens
-        # Make a shallow copy so modifications do not affect caller and caching
-        # logic which relies on the original messages.
-        messages = [dict(m) for m in messages]
+
+        normalised: List[Dict[str, str]] = []
+        for idx, m in enumerate(messages):
+            if isinstance(m, str):
+                normalised.append({"role": "user", "content": m})
+                continue
+
+            # Make a shallow copy so modifications do not affect the caller and
+            # caching logic which relies on the original messages.
+            msg = dict(m)
+            if not msg.get("content"):
+                raise ValueError(f"Missing content in message at index {idx}: {m}")
+            msg.setdefault("role", "user")
+            normalised.append(msg)
+        messages = normalised
 
         # Rough token counting using character length. If the combined input
         # exceeds ``max_input_tokens`` we truncate the last message so that the
