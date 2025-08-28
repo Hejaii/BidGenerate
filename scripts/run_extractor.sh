@@ -22,11 +22,6 @@ if ! python3 -c "import pdfplumber, requests" &> /dev/null; then
     fi
 fi
 
-# 检查API密钥
-if [ -z "$QIANWEN_API_KEY" ]; then
-    export QIANWEN_API_KEY="sk-fe0485c281964259b404907d483d3777"
-fi
-
 # 检查PDF文件
 if [ ! -f "03.招标文件.pdf" ]; then
     echo "❌ 错误：未找到招标文件PDF"

@@ -26,29 +26,10 @@ except ImportError:
     os.system("pip install pdfplumber")
     import pdfplumber
 
-try:
-    import requests
-except ImportError:
-    print("正在安装requests...")
-    os.system("pip install requests")
-    import requests
-
-
 class QianwenAPI:
-    def __init__(self, api_key: str):
-        self.api_key = api_key
+    def __init__(self):
         # 使用正确的通义千问API端点
         self.base_url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
-        
-        # 验证API密钥格式
-        print(f"正在验证API密钥: {'*'*6 if self.api_key else '未提供'}")
-        if not self.api_key or not self.api_key.startswith('sk-'):
-            raise RuntimeError("未正确配置DashScope API密钥，请设置环境变量DASHSCOPE_API_KEY")
-        
-        if len(self.api_key) < 30:
-            print("警告: API密钥长度可能不正确")
-        
-        print("API密钥格式验证通过")
         print(f"API端点: {self.base_url}")
         
     def extract_all_requirements(self, page_content: str, page_number: int) -> List[Dict]:
@@ -137,12 +118,6 @@ class QianwenAPI:
 
 重要：请严格按照JSON格式输出，不要包含任何其他文字、说明或解释。"""
 
-        headers = {
-            'Authorization': f'Bearer {self.api_key}',
-            'Content-Type': 'application/json',
-            'X-DashScope-SSE': 'disable'
-        }
-        
         # 使用LLMClient替代直接API调用
         from llm_client import LLMClient
         
@@ -210,11 +185,11 @@ class QianwenAPI:
 
 
 class PDFExtractor:
-    def __init__(self, pdf_path: str, api_key: str = None):
+    def __init__(self, pdf_path: str):
         self.pdf_path = pdf_path
         self.text_content = ""
         self.pages_content = []
-        self.qianwen_api = QianwenAPI(api_key) if api_key else None
+        self.qianwen_api = QianwenAPI()
         self.page_start_number = 1  # 当前缓存内容对应的起始绝对页码（1-based）
 
     def extract_with_pypdf2(self, start_page: int = None, end_page: int = None) -> str:
@@ -300,9 +275,6 @@ class PDFExtractor:
             print("未获取到可分析的文本内容")
             return results
 
-        if not self.qianwen_api:
-            raise RuntimeError("未配置API密钥，无法进行分析。请通过DASHSCOPE_API_KEY提供")
-
         total_found = 0
         for page_index, page_text in enumerate(self.pages_content, start=1):
             abs_page_num = self.page_start_number + page_index - 1
@@ -385,15 +357,10 @@ def main():
     parser.add_argument("--end", type=int, default=None, help="结束页(1-based)")
     args = parser.parse_args()
 
-    api_key = os.getenv("DASHSCOPE_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("未设置DASHSCOPE_API_KEY环境变量")
-
     pdf_file = args.pdf
     if not os.path.exists(pdf_file):
         raise FileNotFoundError(f"找不到PDF文件 {pdf_file}")
-
-    extractor = PDFExtractor(pdf_file, api_key)
+    extractor = PDFExtractor(pdf_file)
     results = extractor.analyze_company_qualification_requirements(start_page=args.start, end_page=args.end)
     report = extractor.generate_qualification_report(start_page=args.start, end_page=args.end)
 

@@ -578,8 +578,8 @@ class IntelligentScorer:
 def main():
     """主函数"""
     # API密钥配置
-    import os
-    api_key = os.getenv("DASHSCOPE_API_KEY", "")
+    from llm_client import LLMClient
+    api_key = LLMClient().api_key
     
     # 项目根目录
     library_root = "/Users/leojiang/PycharmProjects/标书生成/litchi-smart-orchard-bid"

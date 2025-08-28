@@ -28,10 +28,7 @@ scripts/
 ## 配置说明
 
 ### 1. API配置
-在运行前设置环境变量，并在 `scoring_config.py` 中自动读取：
-```bash
-export DASHSCOPE_API_KEY='你的dashscope密钥'
-```
+项目使用 `llm_client.py` 中预置的API密钥，如需更换请在该文件中修改 `DEFAULT_API_KEY`。
 
 ### 2. 路径配置
 ```python

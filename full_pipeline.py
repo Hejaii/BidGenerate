@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import time
 from pathlib import Path
 import logging
@@ -155,7 +154,7 @@ def main() -> None:
     config = load_config()
     temperature = config.get("temperature")
     client = Client(models=None, temperature=temperature if temperature is not None else 0.2)
-    api = QianwenAPI(os.getenv("DASHSCOPE_API_KEY", ""))
+    api = QianwenAPI()
 
     # 步骤1: 提取需求（可选）
     if args.skip_extract:
