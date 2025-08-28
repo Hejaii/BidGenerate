@@ -10,9 +10,10 @@
 
 ## 快速上手
 ```bash
-# 生成投标文件
-python build_pdf.py --requirements docs/test_requirements.md --kb litchi-smart-orchard-bid --out bid.pdf
-```
+# 一站式流程：提取招标需求并生成 PDF
+python full_pipeline.py --tender path/to/tender.pdf --kb litchi-smart-orchard-bid --out bid.pdf
+
+
 
 更多命令与配置可查看源码及各脚本注释。
 
