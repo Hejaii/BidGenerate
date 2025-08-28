@@ -4,9 +4,9 @@
 智能评分程序配置文件
 """
 
-# 通义千问API配置（改为从环境变量读取，禁止硬编码）
-import os
-QIANWEN_API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
+# 通义千问API配置
+from llm_client import LLMClient
+QIANWEN_API_KEY = LLMClient().api_key
 QIANWEN_BASE_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
 
 # 多个模型配置，按优先级排序

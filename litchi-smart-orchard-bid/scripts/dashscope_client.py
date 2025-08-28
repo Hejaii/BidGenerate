@@ -12,22 +12,23 @@ import time
 from typing import List, Dict, Any, Optional
 import logging
 
+from llm_client import LLMClient
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DashScopeClient:
     """通义千问API客户端"""
-    
+
     def __init__(self):
-        self.api_key = os.getenv('DASHSCOPE_API_KEY')
-        if not self.api_key:
-            raise ValueError("环境变量DASHSCOPE_API_KEY未设置")
-        
+        llm = LLMClient()
+        self.api_key = llm.api_key
+
         self.base_url = "https://dashscope.aliyuncs.com/api/v1"
         self.embedding_model = os.getenv('QW_EMBEDDING_MODEL', 'text-embedding-v1')
         self.llm_model = os.getenv('QW_MODEL_NAME', 'qwen-plus')
-        
+
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"

@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import hashlib
 import json
-import os
 import time
 from typing import Dict, List, Optional
 
@@ -51,7 +50,7 @@ class LLMClient:
 
     def __post_init__(self) -> None:
         if self.api_key is None:
-            self.api_key = os.getenv("DASHSCOPE_API_KEY") or DEFAULT_API_KEY
+            self.api_key = DEFAULT_API_KEY
 
         if self.models is None:
             self.models = [

@@ -13,7 +13,7 @@ import pdfplumber
 from datetime import datetime
 import time
 
-from llm_client import LLMClient, DEFAULT_API_KEY
+from llm_client import LLMClient
 
 class DocumentExtractor:
     def __init__(self, llm: LLMClient | None = None):
@@ -295,9 +295,8 @@ def main():
     print("🔧 招标文件文档提取器")
     print("=" * 50)
     
-    # 检查API密钥
-    api_key = os.getenv("QIANWEN_API_KEY", DEFAULT_API_KEY)
-    llm = LLMClient(api_key=api_key)
+    # 初始化LLM客户端（内部包含API密钥）
+    llm = LLMClient()
     
     # 检查PDF文件
     pdf_path = "03.招标文件.pdf"

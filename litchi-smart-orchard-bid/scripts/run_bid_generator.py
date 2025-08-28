@@ -4,11 +4,11 @@
 标书生成主运行脚本
 """
 
-import os
 import sys
 import json
 import argparse
 import logging
+import os
 from pathlib import Path
 
 # 添加当前目录到Python路径
@@ -76,9 +76,10 @@ def main():
     
     try:
         # 检查环境变量
-        if not os.getenv('DASHSCOPE_API_KEY'):
-            logger.error("环境变量DASHSCOPE_API_KEY未设置")
-            logger.info("请设置通义千问API密钥：export DASHSCOPE_API_KEY='你的dashscope密钥'")
+        from llm_client import LLMClient
+        if not LLMClient().api_key:
+            logger.error("未配置API密钥")
+            logger.info("请在 llm_client.py 中设置有效的通义千问API密钥")
             return 1
         
         # 初始化标书生成器

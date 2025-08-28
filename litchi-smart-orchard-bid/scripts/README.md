@@ -33,10 +33,8 @@ pip install pandas openpyxl
 
 ## 配置说明
 
-### 1. 设置环境变量（推荐）
-```bash
-export DASHSCOPE_API_KEY='你的dashscope密钥'
-```
+### 1. 配置API密钥
+项目默认在 `llm_client.py` 中内置示例密钥，如需更换请直接修改该文件。
 
 ### 2. 可选：修改配置文件 (config.py)
 如需自定义路径或参数，可在 `config.py` 中调整。
@@ -148,7 +146,7 @@ python enhanced_requirement_scorer.py
 ```
 错误: API密钥格式不正确，应该以'sk-'开头
 ```
-**解决方案**：检查是否已通过环境变量 `DASHSCOPE_API_KEY` 正确设置
+**解决方案**：检查 `llm_client.py` 中的 `DEFAULT_API_KEY` 是否设置正确
 
 #### 2. 文件路径不存在
 ```

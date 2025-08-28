@@ -17,12 +17,9 @@ python3 --version
 pip install -r requirements.txt
 ```
 
-### 3. 配置API密钥
-```bash
-export DASHSCOPE_API_KEY="your-api-key-here"
-```
+> 项目已在 `llm_client.py` 中内置示例 API 密钥，如需更换可直接修改该文件。
 
-### 4. 安装LaTeX（可选）
+### 3. 安装LaTeX（可选）
 - **macOS**: `brew install --cask mactex`
 - **Ubuntu**: `sudo apt-get install texlive-full`
 - **Windows**: 下载安装MiKTeX
@@ -76,15 +73,6 @@ python build_pdf.py --requirements test_requirements.md --kb litchi-smart-orchar
 ```
 
 ## 常见问题解决
-
-### ❌ API密钥错误
-```bash
-# 检查环境变量
-echo $DASHSCOPE_API_KEY
-
-# 重新设置
-export DASHSCOPE_API_KEY="your-actual-key"
-```
 
 ### ❌ LaTeX编译失败
 ```bash

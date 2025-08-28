@@ -14,7 +14,7 @@
 - **Python**：`>=3.10`
 - **依赖安装**：`pip install -r requirements.txt`
 - **LaTeX 环境**：需预先安装 `xelatex`、`pdflatex` 或 `latexmk`（任一即可）。
-- **通义千问 API Key**：在环境变量 `DASHSCOPE_API_KEY` 中指定；未设置时会使用 `llm_client.py` 中的默认测试密钥。
+- **通义千问 API Key**：由 `llm_client.py` 内置管理，无需额外配置环境变量。
 
 建议在虚拟环境中运行：
 ```bash
@@ -133,7 +133,7 @@ export BID_DATE=2024-06-30
 ```
 
 ## 7. 常见问题
-1. **API Key 无效或超额**：确认 `DASHSCOPE_API_KEY` 正确且配额充足。
+1. **API Key 无效或超额**：请确认 `llm_client.py` 中配置的密钥仍可使用并且配额充足。
 2. **LaTeX 编译失败**：请确保系统已安装完整的 LaTeX 工具链，并在日志中查看具体错误；程序会在 `build/` 目录留下 `main.tex` 供调试。
 3. **知识库未找到内容**：检查 `--kb` 路径是否正确，或知识库文件是否为空。
 4. **中文乱码**：确保运行环境和 LaTeX 模板均为 UTF‑8 编码，必要时安装中文字体。

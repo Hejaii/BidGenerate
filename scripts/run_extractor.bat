@@ -26,11 +26,6 @@ if %errorlevel% neq 0 (
     )
 )
 
-REM 检查API密钥
-if "%QIANWEN_API_KEY%"=="" (
-    set QIANWEN_API_KEY=sk-fe0485c281964259b404907d483d3777
-)
-
 REM 检查PDF文件
 if not exist "03.招标文件.pdf" (
     echo ❌ 错误：未找到招标文件PDF
