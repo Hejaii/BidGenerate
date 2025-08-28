@@ -24,9 +24,12 @@ pip install -r requirements.txt
 ```
 
 ## 3. 准备数据
+项目根目录下提供了 `inputs/` 文件夹作为默认素材存放位置。该目录初始为空，请将待处理的招标 PDF 和需求 Markdown 放置于此，并在运行命令时通过参数引用，如 `--tender inputs/tender.pdf` 或 `--requirements inputs/requirements.md`。
+
 ### 3.1 招标文件
 - 支持 **PDF** 格式。
-- 文件路径通过 `--tender` 参数传入，如 `--tender docs/tender.pdf`。
+- 文件路径通过 `--tender` 参数传入，如 `--tender inputs/tender.pdf`。
+
 
 ### 3.2 知识库
 - 目录内可包含 Markdown、Word、XML 等文本资料，系统会自动识别。
@@ -38,7 +41,8 @@ pip install -r requirements.txt
 当只有原始招标 PDF 时，可运行一站式流程：
 ```bash
 python full_pipeline.py \
-  --tender path/to/tender.pdf \
+  --tender inputs/tender.pdf \
+
   --kb litchi-smart-orchard-bid \
   --out bid.pdf
 ```
@@ -66,7 +70,9 @@ python full_pipeline.py \
 若已拥有需求 Markdown 文件，可跳过抽取过程并直接生成 PDF：
 ```bash
 python build_pdf.py \
-  --requirements docs/test_requirements.md \
+
+  --requirements inputs/requirements.md \
+
   --kb litchi-smart-orchard-bid \
   --out bid.pdf
 ```
@@ -110,6 +116,7 @@ export BID_DATE=2024-06-30
 ## 6. 目录结构
 ```
 ├─ docs/                     # 示例需求及说明文档
+├─ inputs/                   # 招标文件与需求清单（用户自行放置）
 ├─ litchi-smart-orchard-bid/ # 示例知识库
 ├─ scripts/                  # 辅助脚本，如 PDF 文本抽取等
 ├─ src/
