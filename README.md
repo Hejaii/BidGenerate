@@ -1,5 +1,6 @@
 # 智能化标书生成系统
 
+
 本项目提供一套基于大语言模型的自动化投标文件生成工具。系统能够从招标文件中抽取需求、在本地知识库中检索相关资料、生成正式文档并渲染为 PDF。以下文档对使用流程、配置方式和内部结构进行了事无巨细的说明。
 
 ## 1. 核心功能
@@ -29,6 +30,7 @@ pip install -r requirements.txt
 - 支持 **PDF** 格式。
 - 文件路径通过 `--tender` 参数传入，如 `--tender inputs/tender.pdf`。
 
+
 ### 3.2 知识库
 - 目录内可包含 Markdown、Word、XML 等文本资料，系统会自动识别。
 - 本仓库自带示例知识库 `litchi-smart-orchard-bid/`，其中按包划分子目录，可直接用于测试。
@@ -40,6 +42,7 @@ pip install -r requirements.txt
 ```bash
 python full_pipeline.py \
   --tender inputs/tender.pdf \
+
   --kb litchi-smart-orchard-bid \
   --out bid.pdf
 ```
@@ -67,7 +70,9 @@ python full_pipeline.py \
 若已拥有需求 Markdown 文件，可跳过抽取过程并直接生成 PDF：
 ```bash
 python build_pdf.py \
+
   --requirements inputs/requirements.md \
+
   --kb litchi-smart-orchard-bid \
   --out bid.pdf
 ```
