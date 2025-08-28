@@ -93,18 +93,33 @@ class LLMClient:
         temperature = temperature if temperature is not None else self.temperature
         max_tokens = max_tokens if max_tokens is not None else self.max_tokens
 
+        if not isinstance(messages, list):
+            raise TypeError("messages must be a list of message dicts or strings")
+
         normalised: List[Dict[str, str]] = []
         for idx, m in enumerate(messages):
             if isinstance(m, str):
-                normalised.append({"role": "user", "content": m})
-                continue
+                msg = {"role": "user", "content": m}
+            else:
+                # Make a shallow copy so modifications do not affect the caller
+                # and caching logic which relies on the original messages.
+                try:
+                    msg = dict(m)
+                except Exception as exc:
+                    raise TypeError(
+                        f"Message at index {idx} is not a mapping or string: {m}"
+                    ) from exc
 
-            # Make a shallow copy so modifications do not affect the caller and
-            # caching logic which relies on the original messages.
-            msg = dict(m)
-            if not msg.get("content"):
-                raise ValueError(f"Missing content in message at index {idx}: {m}")
-            msg.setdefault("role", "user")
+                content = msg.get("content")
+                if not isinstance(content, str) or not content.strip():
+                    print(f"⚠️  无效消息[{idx}]: {msg}")
+                    raise ValueError(
+                        f"Missing content in message at index {idx}: {m}"
+                    )
+                msg.setdefault("role", "user")
+
+            # 打印验证后的消息以便调试
+            print(f"💬 message[{idx}]: {msg}")
             normalised.append(msg)
         messages = normalised
 
